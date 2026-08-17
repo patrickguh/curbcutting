@@ -1,7 +1,7 @@
 package ca.curbcutting.audit;
 
 import com.deque.html.axecore.playwright.AxeBuilder;
-import com.deque.html.axecore.utility.axeresults.AxeResults;
+import com.deque.html.axecore.results.AxeResults;
 import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.Page;
@@ -20,7 +20,7 @@ public class ScratchScan {
             Page page = browser.newPage();
             page.navigate(target);
 
-            AxeResults results = new AxeBuilder(page).analyze();
+            var results = new AxeBuilder(page).analyze();
 
             System.out.println("Scanned: " + target);
             System.out.println("Violations: " + results.getViolations().size());
