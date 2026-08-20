@@ -23,8 +23,8 @@ public class ScanController {
     }
 
     @PostMapping("/scans")
-    public UUID createScan(@RequestParam String url) {
-        return scanService.scanAndStore(url);
+    public ScanJob create(@RequestParam String url) {
+        return scanService.enqueue(url);
     }
 
     @GetMapping("/scans/{id}")

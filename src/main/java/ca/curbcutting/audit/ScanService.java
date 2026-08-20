@@ -27,52 +27,52 @@ public class ScanService {
     }
 
     @Transactional
-    public UUID scanAndStore(String url) {
-        ScanJob job = scanJobRepository.save(new ScanJob(url));
-
-        try {
-            job.markRunning();
-
-            AxeResults results = runAxeOn(url);
-
-            Page page = pageRepository.save(new Page(job, url));
-
-            List<Violation> toSave = new ArrayList<>();
-            results.getViolations().forEach(rule ->
-                    rule.getNodes().forEach(node ->
-                            toSave.add(new Violation(
-                                    page,
-                                    rule.getId(),
-                                    rule.getImpact(),
-                                    rule.getHelp(),
-                                    rule.getHelpUrl(),
-                                    node.getTarget().toString(),
-                                    node.getHtml()
-                            ))
-                    )
-            );
-            violationRepository.saveAll(toSave);
-
-            job.markDone();
-
-        } catch (Exception e) {
-            job.markFailed(e.getMessage());
-        }
-
-        return job.getId();
+    public ScanJob enqueue(String url) {
+        return scanJobRepository.save(new ScanJob(url));
     }
 
-    private AxeResults runAxeOn(String url) {
+    @Transactional
+    public void markRunning(UUID jobId) {
+        scanJobRepository.findById(jobId).orElseThrow().markRunning();
+    }
+
+    public AxeResults runAxeOn(String url) {          // was private
         try (Playwright playwright = Playwright.create()) {
             Browser browser = playwright.chromium().launch();
             com.microsoft.playwright.Page browserPage = browser.newPage();
-
             browserPage.navigate(url);
-
             AxeResults results = new AxeBuilder(browserPage).analyze();
-
             browser.close();
             return results;
         }
+    }
+
+    @Transactional
+    public void storeResults(UUID jobId, AxeResults results) {
+        ScanJob job = scanJobRepository.findById(jobId).orElseThrow();
+        Page page = pageRepository.save(new Page(job, job.getRootUrl()));
+
+        List<Violation> toSave = new ArrayList<>();
+        results.getViolations().forEach(rule ->
+                rule.getNodes().forEach(node ->
+                        toSave.add(new Violation(
+                                page,
+                                rule.getId(),
+                                rule.getImpact(),
+                                rule.getHelp(),
+                                rule.getHelpUrl(),
+                                node.getTarget().toString(),
+                                node.getHtml()
+                        ))
+                )
+        );
+        violationRepository.saveAll(toSave);
+
+        job.markDone();
+    }
+
+    @Transactional
+    public void markFailed(UUID jobId, String message) {
+        scanJobRepository.findById(jobId).orElseThrow().markFailed(message);
     }
 }

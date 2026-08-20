@@ -46,6 +46,18 @@ public class ScanJob {
     public OffsetDateTime getFinishedAt() { return finishedAt; }
     public String getErrorMessage() { return errorMessage; }
 
+    public void setRootUrl(String rootUrl) {
+        this.rootUrl = rootUrl;
+    }
+
+    public void setStatus(ScanStatus status) {
+        this.status = status;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
+
     public void markRunning() {
         this.status = ScanStatus.RUNNING;
         this.startedAt = OffsetDateTime.now();
