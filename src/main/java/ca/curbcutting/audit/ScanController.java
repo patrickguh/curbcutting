@@ -27,6 +27,11 @@ public class ScanController {
         return scanService.enqueue(url);
     }
 
+    @GetMapping("/scans")
+    public List<ScanJob> listScans() {
+        return scanJobRepository.findAll();
+    }
+
     @GetMapping("/scans/{id}")
     public ScanJob getScan(@PathVariable UUID id) {
         return scanJobRepository.findById(id).orElseThrow();
