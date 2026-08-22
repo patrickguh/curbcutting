@@ -1,0 +1,1 @@
+ALTER TABLE scan_jobs ADD COLUMN attempts INT NOT NULL DEFAULT 0;

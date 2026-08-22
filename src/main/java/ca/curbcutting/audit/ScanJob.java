@@ -3,7 +3,7 @@ package ca.curbcutting.audit;
 import jakarta.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.UUID;
-
+import java.time.Instant;
 @Entity
 @Table(name = "scan_jobs")
 public class ScanJob {
@@ -16,7 +16,6 @@ public class ScanJob {
     private String rootUrl;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "text")
     private ScanStatus status;
 
     @Column(name = "created_at", nullable = false)
@@ -30,6 +29,9 @@ public class ScanJob {
 
     @Column(name = "error_message", columnDefinition = "text")
     private String errorMessage;
+
+    @Column(nullable = false)
+    private int attempts = 0;
 
     protected ScanJob() { }          // required by JPA
 
@@ -45,6 +47,7 @@ public class ScanJob {
     public OffsetDateTime getStartedAt() { return startedAt; }
     public OffsetDateTime getFinishedAt() { return finishedAt; }
     public String getErrorMessage() { return errorMessage; }
+    public int getAttempts() { return attempts; }
 
     public void setRootUrl(String rootUrl) {
         this.rootUrl = rootUrl;
@@ -63,6 +66,15 @@ public class ScanJob {
         this.startedAt = OffsetDateTime.now();
     }
 
+    public void markQueued() {
+        this.status = ScanStatus.QUEUED;
+        this.startedAt = null;
+    }
+
+    public void incrementAttempts() {
+        this.attempts++;
+    }
+
     public void markDone() {
         this.status = ScanStatus.DONE;
         this.finishedAt = OffsetDateTime.now();
@@ -72,5 +84,9 @@ public class ScanJob {
         this.status = ScanStatus.FAILED;
         this.errorMessage = message;
         this.finishedAt = OffsetDateTime.now();
+    }
+
+    public void setStartedAt(OffsetDateTime startedAt) {
+        this.startedAt = startedAt;
     }
 }

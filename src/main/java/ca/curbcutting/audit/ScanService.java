@@ -7,23 +7,32 @@ import com.microsoft.playwright.Playwright;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.time.OffsetDateTime;
+import java.util.Optional;
+import ca.curbcutting.audit.ScanStatus;
 
 @Service
 public class ScanService {
 
+    private static final int MAX_ATTEMPTS = 3;
+
     private final ScanJobRepository scanJobRepository;
     private final PageRepository pageRepository;
     private final ViolationRepository violationRepository;
+    private final SiteCrawler siteCrawler;
 
     public ScanService(ScanJobRepository scanJobRepository,
                        PageRepository pageRepository,
-                       ViolationRepository violationRepository) {
+                       ViolationRepository violationRepository,
+                       SiteCrawler siteCrawler) {
         this.scanJobRepository = scanJobRepository;
         this.pageRepository = pageRepository;
         this.violationRepository = violationRepository;
+        this.siteCrawler = siteCrawler;
     }
 
     @Transactional
@@ -32,8 +41,16 @@ public class ScanService {
     }
 
     @Transactional
-    public void markRunning(UUID jobId) {
-        scanJobRepository.findById(jobId).orElseThrow().markRunning();
+    public Optional<ScanJob> claimNextJob() {
+        return scanJobRepository.claimNextQueued().map(job -> {
+            job.setStatus(ScanStatus.RUNNING);
+            job.setStartedAt(OffsetDateTime.now());
+            return job;
+        });
+    }
+
+    public List<String> discoverPages(String rootUrl) {
+        return siteCrawler.discover(rootUrl);
     }
 
     public AxeResults runAxeOn(String url) {          // was private
@@ -48,9 +65,9 @@ public class ScanService {
     }
 
     @Transactional
-    public void storeResults(UUID jobId, AxeResults results) {
+    public void storeResults(UUID jobId, String url, AxeResults results) {
         ScanJob job = scanJobRepository.findById(jobId).orElseThrow();
-        Page page = pageRepository.save(new Page(job, job.getRootUrl()));
+        Page page = pageRepository.save(new Page(job, url));
 
         List<Violation> toSave = new ArrayList<>();
         results.getViolations().forEach(rule ->
@@ -67,12 +84,36 @@ public class ScanService {
                 )
         );
         violationRepository.saveAll(toSave);
+    }
 
-        job.markDone();
+    @Transactional
+    public void markDone(UUID jobId) {
+        scanJobRepository.findById(jobId).orElseThrow().markDone();
     }
 
     @Transactional
     public void markFailed(UUID jobId, String message) {
         scanJobRepository.findById(jobId).orElseThrow().markFailed(message);
+    }
+
+    @Transactional
+    public void recordFailure(UUID jobId, String message) {
+        retryOrFail(scanJobRepository.findById(jobId).orElseThrow(), message);
+    }
+
+    @Transactional
+    public void reapStaleRunningJobs(Duration timeout) {
+        OffsetDateTime cutoff = OffsetDateTime.now().minus(timeout);
+        scanJobRepository.findByStatusAndStartedAtBefore(ScanStatus.RUNNING, cutoff)
+                .forEach(job -> retryOrFail(job, "stale: exceeded processing timeout"));
+    }
+
+    private void retryOrFail(ScanJob job, String message) {
+        job.incrementAttempts();
+        if (job.getAttempts() < MAX_ATTEMPTS) {
+            job.markQueued();
+        } else {
+            job.markFailed(message);
+        }
     }
 }
