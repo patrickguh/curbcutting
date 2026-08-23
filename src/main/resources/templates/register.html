@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Curbcutting &mdash; Sign up</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%235b4bf0'/%3E%3Cpath d='M4 17h4l3-8h6l3 8' stroke='white' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+</head>
+<body>
+<header>
+    <div class="logo-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 17h4l3-8h6l3 8" />
+            <circle cx="6" cy="19" r="1.5" fill="currentColor" stroke="none" />
+            <circle cx="18" cy="19" r="1.5" fill="currentColor" stroke="none" />
+        </svg>
+    </div>
+    <div>
+        <h1>Curbcutting</h1>
+        <nav><a href="/">&larr; Back to home</a></nav>
+    </div>
+</header>
+
+<main>
+    <section class="auth-card" aria-labelledby="register-heading">
+        <h2 id="register-heading">Create an account</h2>
+
+        <p class="auth-error" th:if="${error}" role="alert" th:text="${error}">Something went wrong.</p>
+
+        <form method="post" th:action="@{/register}" class="auth-form">
+            <div>
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" th:value="${email}" required autofocus autocomplete="email">
+            </div>
+            <div>
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required minlength="8" autocomplete="new-password">
+            </div>
+            <div>
+                <label for="confirm-password">Confirm password</label>
+                <input type="password" id="confirm-password" name="confirm-password" required minlength="8" autocomplete="new-password">
+            </div>
+            <button type="submit">Sign up</button>
+        </form>
+
+        <p class="auth-switch">Already have an account? <a href="/login">Log in</a></p>
+    </section>
+</main>
+</body>
+</html>

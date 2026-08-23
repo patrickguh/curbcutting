@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -18,8 +18,17 @@
     </div>
     <div>
         <h1>Curbcutting</h1>
-        <nav><a href="/">&larr; Back to all scans</a></nav>
+        <nav><a href="/">&larr; Back to home</a></nav>
     </div>
+    <nav class="account-nav" aria-label="Account">
+        <a href="/account/scans" sec:authorize="isAuthenticated()">My Scans</a>
+        <span class="account-email" sec:authorize="isAuthenticated()" sec:authentication="name"></span>
+        <form method="post" th:action="@{/logout}" sec:authorize="isAuthenticated()" class="logout-form">
+            <button type="submit" class="link-button">Log out</button>
+        </form>
+        <a href="/login" sec:authorize="isAnonymous()">Log in</a>
+        <a href="/register" sec:authorize="isAnonymous()" class="signup-link">Sign up</a>
+    </nav>
 </header>
 
 <main>
@@ -27,6 +36,10 @@
         <h2 id="report-heading">
             Report for <span th:text="${job.rootUrl}">https://example.com</span>
         </h2>
+        <p th:if="${job.example}">
+            <span class="status status-DONE">Example report</span>
+            &mdash; this is a public demo scan anyone can view, kept here to show how Curbcutting works.
+        </p>
         <p>
             Status: <span class="status" th:classappend="'status-' + ${job.status}" th:text="${job.status}">DONE</span>
             &middot; <span th:text="${#lists.size(pageReports)}">0</span> page(s) scanned

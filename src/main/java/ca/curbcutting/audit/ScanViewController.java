@@ -1,12 +1,13 @@
 package ca.curbcutting.audit;
 
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 import java.util.Comparator;
 import java.util.List;
@@ -16,19 +17,27 @@ import java.util.stream.Collectors;
 @Controller
 public class ScanViewController {
 
-    private final ScanService scanService;
     private final ScanJobRepository scanJobRepository;
     private final PageRepository pageRepository;
     private final ViolationRepository violationRepository;
+    private final UserRepository userRepository;
 
-    public ScanViewController(ScanService scanService,
-                              ScanJobRepository scanJobRepository,
+    public ScanViewController(ScanJobRepository scanJobRepository,
                               PageRepository pageRepository,
-                              ViolationRepository violationRepository) {
-        this.scanService = scanService;
+                              ViolationRepository violationRepository,
+                              UserRepository userRepository) {
         this.scanJobRepository = scanJobRepository;
         this.pageRepository = pageRepository;
         this.violationRepository = violationRepository;
+        this.userRepository = userRepository;
+    }
+
+    private User currentUser(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()
+                || authentication instanceof AnonymousAuthenticationToken) {
+            return null;
+        }
+        return userRepository.findByEmail(authentication.getName()).orElse(null);
     }
 
     public record PageReport(Page page, List<Violation> violations) { }
@@ -36,23 +45,22 @@ public class ScanViewController {
     public record CategorySummary(String slug, String label, long count) { }
 
     @GetMapping("/")
-    public String listScans(Model model) {
-        List<ScanJob> jobs = scanJobRepository.findAll(); // TODO: paginate once the demo dataset grows past a screenful
-        jobs.sort(Comparator.comparing(ScanJob::getCreatedAt).reversed());
-        model.addAttribute("jobs", jobs);
+    public String home(Model model) {
+        scanJobRepository.findFirstByIsExampleTrue().ifPresent(job -> model.addAttribute("exampleJob", job));
         return "scans";
     }
 
-    @PostMapping("/")
-    public String submitScan(@RequestParam String url, RedirectAttributes redirectAttributes) {
-        ScanJob job = scanService.enqueue(url);
-        redirectAttributes.addFlashAttribute("submittedId", job.getId());
-        return "redirect:/";
-    }
-
     @GetMapping("/scans/{id}/report")
-    public String scanReport(@PathVariable UUID id, Model model) {
-        ScanJob job = scanJobRepository.findById(id).orElseThrow();
+    public String scanReport(@PathVariable UUID id, Authentication authentication, Model model) {
+        ScanJob job = scanJobRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        User viewer = currentUser(authentication);
+        boolean isOwner = job.getOwner() != null && viewer != null && job.getOwner().getId().equals(viewer.getId());
+        if (!job.isExample() && !isOwner) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+
         List<PageReport> pageReports = pageRepository.findByScanJobId(id).stream()
                 .map(page -> new PageReport(page, violationRepository.findByPageId(page.getId())))
                 .toList();

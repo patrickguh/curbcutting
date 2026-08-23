@@ -44,6 +44,11 @@ public class ScanService {
     }
 
     @Transactional
+    public ScanJob enqueue(String url, User owner) {
+        return scanJobRepository.save(new ScanJob(url, owner));
+    }
+
+    @Transactional
     public Optional<ScanJob> claimNextJob() {
         return scanJobRepository.claimNextQueued().map(job -> {
             job.setStatus(ScanStatus.RUNNING);

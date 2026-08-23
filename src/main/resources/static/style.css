@@ -130,6 +130,7 @@ body {
 
 header {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 0.85rem;
     margin-bottom: 1.75rem;
@@ -183,6 +184,146 @@ nav a {
 nav a:hover, nav a:focus-visible {
     gap: 0.55rem;
     color: var(--accent-2);
+}
+
+.account-nav {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.9rem;
+}
+
+.account-nav a {
+    color: var(--link);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color var(--dur) var(--ease);
+}
+
+.account-nav a:hover, .account-nav a:focus-visible {
+    color: var(--accent-2);
+}
+
+.account-nav .signup-link {
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    color: #fff;
+    transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+
+.account-nav .signup-link:hover, .account-nav .signup-link:focus-visible {
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+
+.account-email {
+    color: var(--muted);
+    font-weight: 600;
+}
+
+.logout-form {
+    margin: 0;
+    display: inline;
+}
+
+.link-button {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font: inherit;
+    font-weight: 600;
+    color: var(--link);
+    cursor: pointer;
+    transition: color var(--dur) var(--ease);
+}
+
+.link-button:hover, .link-button:focus-visible {
+    color: var(--accent-2);
+}
+
+/* ---------- auth pages ---------- */
+
+.auth-card {
+    max-width: 26rem;
+    margin: 1rem auto;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 2rem 2.1rem;
+    box-shadow: var(--shadow-sm);
+    animation: fadeInUp 0.5s var(--ease) both;
+}
+
+.auth-card h2 {
+    margin: 0 0 1.2rem;
+    font-size: 1.4rem;
+    font-weight: 800;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.auth-form label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    font-size: 0.9rem;
+}
+
+.auth-form input {
+    width: 100%;
+    padding: 0.65rem 0.8rem;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    font-size: 1rem;
+    font-family: inherit;
+    background: var(--surface-alt);
+    color: var(--text);
+    transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+
+.auth-form input:hover {
+    border-color: var(--accent);
+}
+
+.auth-form input:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: var(--surface);
+    box-shadow: 0 0 0 4px var(--accent-soft);
+}
+
+.auth-form button {
+    margin-top: 0.3rem;
+}
+
+.auth-error {
+    background: var(--critical-soft);
+    border: 1px solid color-mix(in srgb, var(--critical) 35%, transparent);
+    color: var(--text);
+    padding: 0.7rem 0.9rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    margin: 0 0 1rem;
+}
+
+.auth-switch {
+    margin: 1.2rem 0 0;
+    font-size: 0.9rem;
+    color: var(--muted);
+    text-align: center;
+}
+
+.auth-switch a {
+    color: var(--link);
+    font-weight: 600;
 }
 
 /* ---------- flash ---------- */
@@ -770,6 +911,17 @@ a {
     background: var(--accent-soft);
     transform: translateY(-2px);
     box-shadow: var(--shadow-sm);
+}
+
+.law-links a.cta-primary {
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    border-color: transparent;
+    color: #fff;
+}
+
+.law-links a.cta-primary:hover, .law-links a.cta-primary:focus-visible {
+    color: #fff;
+    filter: brightness(1.06);
 }
 
 /* compliance timeline */

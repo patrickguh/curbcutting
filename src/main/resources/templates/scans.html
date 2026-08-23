@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -20,6 +20,15 @@
         <h1>Curbcutting</h1>
         <p class="tagline">Automated AODA/WCAG accessibility scanning</p>
     </div>
+    <nav class="account-nav" aria-label="Account">
+        <a href="/account/scans" sec:authorize="isAuthenticated()">My Scans</a>
+        <span class="account-email" sec:authorize="isAuthenticated()" sec:authentication="name"></span>
+        <form method="post" th:action="@{/logout}" sec:authorize="isAuthenticated()" class="logout-form">
+            <button type="submit" class="link-button">Log out</button>
+        </form>
+        <a href="/login" sec:authorize="isAnonymous()">Log in</a>
+        <a href="/register" sec:authorize="isAnonymous()" class="signup-link">Sign up</a>
+    </nav>
 </header>
 
 <main>
@@ -115,52 +124,37 @@
             confirm current obligations against the official regulation.</p>
     </section>
 
-    <div class="flash" role="status" th:if="${submittedId}">
-        Scan queued (id: <code th:text="${submittedId}">id</code>). It will appear below once a worker picks it up.
-    </div>
-
-    <form class="new-scan" method="post" action="/" aria-label="Start a new scan">
-        <div>
-            <label for="url">Website URL to scan</label>
-            <input type="url" id="url" name="url" placeholder="https://example.com" required>
+    <section class="law-card" aria-labelledby="example-heading" th:if="${exampleJob}">
+        <p class="eyebrow">See it in action</p>
+        <h2 id="example-heading">Example report: Deque University's Mars demo</h2>
+        <p>That's a real, deliberately-broken accessibility test site &mdash; built specifically to be scanned.
+            Here's exactly what a Curbcutting report looks like against it: violations by page, categorized by
+            type, with an AI-generated summary.</p>
+        <div class="law-links">
+            <a th:href="@{'/scans/' + ${exampleJob.id} + '/report'}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg>
+                View the example report
+            </a>
         </div>
-        <button type="submit">Scan</button>
-    </form>
+    </section>
 
-    <section aria-labelledby="scans-heading">
-        <h2 id="scans-heading">Scans</h2>
-
-        <p class="empty-state" th:if="${#lists.isEmpty(jobs)}">No scans yet &mdash; submit a URL above to get started.</p>
-
-        <div class="table-wrap" th:unless="${#lists.isEmpty(jobs)}">
-        <table>
-            <caption>All submitted scans, most recent first</caption>
-            <thead>
-            <tr>
-                <th scope="col">Site</th>
-                <th scope="col">Status</th>
-                <th scope="col">Submitted</th>
-                <th scope="col">Report</th>
-            </tr>
-            </thead>
-            <tbody aria-live="polite">
-            <tr th:each="job : ${jobs}" th:attr="data-job-id=${job.id}">
-                <td th:text="${job.rootUrl}">https://example.com</td>
-                <td>
-                    <span class="status" th:classappend="'status-' + ${job.status}" th:text="${job.status}">QUEUED</span>
-                </td>
-                <td th:text="${#temporals.format(job.createdAt, 'yyyy-MM-dd HH:mm')}">2026-01-01 00:00</td>
-                <td class="report-cell">
-                    <a th:if="${job.status.name() == 'DONE' or job.status.name() == 'FAILED'}"
-                       th:href="@{'/scans/' + ${job.id} + '/report'}">View report</a>
-                    <span th:unless="${job.status.name() == 'DONE' or job.status.name() == 'FAILED'}" class="empty-state">pending&hellip;</span>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+    <section class="law-card" aria-labelledby="cta-heading">
+        <p class="eyebrow">Get started</p>
+        <h2 id="cta-heading">
+            <span sec:authorize="isAuthenticated()">Scan your own website</span>
+            <span sec:authorize="isAnonymous()">Create a free account to scan your own website</span>
+        </h2>
+        <p>
+            <span sec:authorize="isAuthenticated()">Your scans and their reports are private to your account.</span>
+            <span sec:authorize="isAnonymous()">Scans are private to your account &mdash; log in or sign up to
+                submit a URL and keep track of your own scan history.</span>
+        </p>
+        <div class="law-links">
+            <a href="/account/scans" sec:authorize="isAuthenticated()">Go to My Scans</a>
+            <a href="/login" sec:authorize="isAnonymous()">Log in</a>
+            <a href="/register" sec:authorize="isAnonymous()" class="cta-primary">Sign up free</a>
         </div>
     </section>
 </main>
-<script defer src="/app.js"></script>
 </body>
 </html>

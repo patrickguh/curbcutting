@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Curbcutting &mdash; My Scans</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%235b4bf0'/%3E%3Cpath d='M4 17h4l3-8h6l3 8' stroke='white' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+</head>
+<body>
+<header>
+    <div class="logo-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 17h4l3-8h6l3 8" />
+            <circle cx="6" cy="19" r="1.5" fill="currentColor" stroke="none" />
+            <circle cx="18" cy="19" r="1.5" fill="currentColor" stroke="none" />
+        </svg>
+    </div>
+    <div>
+        <h1>Curbcutting</h1>
+        <nav><a href="/">&larr; Back to home</a></nav>
+    </div>
+    <nav class="account-nav" aria-label="Account">
+        <span class="account-email" th:text="${userEmail}">you@example.com</span>
+        <form method="post" th:action="@{/logout}" class="logout-form">
+            <button type="submit" class="link-button">Log out</button>
+        </form>
+    </nav>
+</header>
+
+<main>
+    <div class="flash" role="status" th:if="${submittedId}">
+        Scan queued (id: <code th:text="${submittedId}">id</code>). It will appear below once a worker picks it up.
+    </div>
+
+    <form class="new-scan" method="post" th:action="@{/account/scans}" aria-label="Start a new scan">
+        <div>
+            <label for="url">Website URL to scan</label>
+            <input type="url" id="url" name="url" placeholder="https://example.com" required>
+        </div>
+        <button type="submit">Scan</button>
+    </form>
+
+    <section aria-labelledby="my-scans-heading">
+        <h2 id="my-scans-heading">My scans</h2>
+        <p class="tagline">Every scan you've submitted, private to your account.</p>
+
+        <p class="empty-state" th:if="${#lists.isEmpty(jobs)}">
+            You haven't submitted any scans yet &mdash; submit a URL above to get started.
+        </p>
+
+        <div class="table-wrap" th:unless="${#lists.isEmpty(jobs)}">
+        <table>
+            <caption>Your submitted scans, most recent first</caption>
+            <thead>
+            <tr>
+                <th scope="col">Site</th>
+                <th scope="col">Status</th>
+                <th scope="col">Submitted</th>
+                <th scope="col">Report</th>
+            </tr>
+            </thead>
+            <tbody aria-live="polite">
+            <tr th:each="job : ${jobs}" th:attr="data-job-id=${job.id}">
+                <td th:text="${job.rootUrl}">https://example.com</td>
+                <td>
+                    <span class="status" th:classappend="'status-' + ${job.status}" th:text="${job.status}">QUEUED</span>
+                </td>
+                <td th:text="${#temporals.format(job.createdAt, 'yyyy-MM-dd HH:mm')}">2026-01-01 00:00</td>
+                <td class="report-cell">
+                    <a th:if="${job.status.name() == 'DONE' or job.status.name() == 'FAILED'}"
+                       th:href="@{'/scans/' + ${job.id} + '/report'}">View report</a>
+                    <span th:unless="${job.status.name() == 'DONE' or job.status.name() == 'FAILED'}" class="empty-state">pending&hellip;</span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        </div>
+    </section>
+</main>
+<script defer src="/app.js"></script>
+</body>
+</html>

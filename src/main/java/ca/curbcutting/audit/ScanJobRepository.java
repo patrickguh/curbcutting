@@ -20,6 +20,8 @@ public interface ScanJobRepository extends JpaRepository<ScanJob, UUID> {
     Optional<ScanJob> claimNextQueued();
     Optional<ScanJob> findFirstByStatusOrderByCreatedAtAsc(ScanStatus status);
     List<ScanJob> findByStatusAndStartedAtBefore(ScanStatus status, OffsetDateTime cutoff);
+    List<ScanJob> findByOwnerId(UUID ownerId);
+    Optional<ScanJob> findFirstByIsExampleTrue();
 }
 
 interface PageRepository extends JpaRepository<Page, UUID> {

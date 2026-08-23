@@ -36,6 +36,13 @@ public class ScanJob {
     @Column(columnDefinition = "text")
     private String interpretation;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id")
+    private User owner;
+
+    @Column(name = "is_example", nullable = false)
+    private boolean isExample = false;
+
     protected ScanJob() { }          // required by JPA
 
     public ScanJob(String rootUrl) {
@@ -43,8 +50,16 @@ public class ScanJob {
         this.status = ScanStatus.QUEUED;
     }
 
+    public ScanJob(String rootUrl, User owner) {
+        this.rootUrl = rootUrl;
+        this.status = ScanStatus.QUEUED;
+        this.owner = owner;
+    }
+
     public UUID getId() { return id; }
     public String getRootUrl() { return rootUrl; }
+    public User getOwner() { return owner; }
+    public boolean isExample() { return isExample; }
     public ScanStatus getStatus() { return status; }
     public OffsetDateTime getCreatedAt() { return createdAt; }
     public OffsetDateTime getStartedAt() { return startedAt; }
