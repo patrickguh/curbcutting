@@ -33,11 +33,14 @@ public class Violation {
     @Column(name = "html_snippet", columnDefinition = "text")
     private String htmlSnippet;
 
+    @Column(columnDefinition = "text")
+    private String tags;
+
     protected Violation() { }
 
     public Violation(Page page, String ruleId, String impact,
                      String helpText, String helpUrl,
-                     String target, String htmlSnippet) {
+                     String target, String htmlSnippet, String tags) {
         this.page = page;
         this.ruleId = ruleId;
         this.impact = impact;
@@ -45,6 +48,7 @@ public class Violation {
         this.helpUrl = helpUrl;
         this.target = target;
         this.htmlSnippet = htmlSnippet;
+        this.tags = tags;
     }
 
     public UUID getId() { return id; }
@@ -54,4 +58,9 @@ public class Violation {
     public String getHelpUrl() { return helpUrl; }
     public String getTarget() { return target; }
     public String getHtmlSnippet() { return htmlSnippet; }
+    public String getTags() { return tags; }
+
+    public ViolationCategory getCategory() {
+        return ViolationCategory.fromTagsCsv(tags);
+    }
 }

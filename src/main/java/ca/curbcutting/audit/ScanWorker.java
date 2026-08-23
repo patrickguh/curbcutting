@@ -24,8 +24,8 @@ public class ScanWorker {
         scanService.claimNextJob().ifPresent(job -> {
             try {
                 for (String url : scanService.discoverPages(job.getRootUrl())) {
-                    var results = scanService.runAxeOn(url);
-                    scanService.storeResults(job.getId(), url, results);
+                    var scanResult = scanService.runAxeOn(url);
+                    scanService.storeResults(job.getId(), url, scanResult);
                 }
                 scanService.markDone(job.getId());
             } catch (Exception e) {

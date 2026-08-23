@@ -11,6 +11,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Controller
 public class ScanViewController {
@@ -31,6 +32,8 @@ public class ScanViewController {
     }
 
     public record PageReport(Page page, List<Violation> violations) { }
+
+    public record CategorySummary(String slug, String label, long count) { }
 
     @GetMapping("/")
     public String listScans(Model model) {
@@ -56,9 +59,18 @@ public class ScanViewController {
 
         int totalViolations = pageReports.stream().mapToInt(pr -> pr.violations().size()).sum();
 
+        List<CategorySummary> categorySummaries = pageReports.stream()
+                .flatMap(pr -> pr.violations().stream())
+                .collect(Collectors.groupingBy(Violation::getCategory, Collectors.counting()))
+                .entrySet().stream()
+                .map(e -> new CategorySummary(e.getKey().getSlug(), e.getKey().getLabel(), e.getValue()))
+                .sorted(Comparator.comparingLong(CategorySummary::count).reversed())
+                .toList();
+
         model.addAttribute("job", job);
         model.addAttribute("pageReports", pageReports);
         model.addAttribute("totalViolations", totalViolations);
+        model.addAttribute("categorySummaries", categorySummaries);
         return "scan-detail";
     }
 }

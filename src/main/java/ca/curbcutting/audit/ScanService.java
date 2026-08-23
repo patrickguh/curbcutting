@@ -56,24 +56,25 @@ public class ScanService {
         return siteCrawler.discover(rootUrl);
     }
 
-    public AxeResults runAxeOn(String url) {          // was private
+    public PageScanResult runAxeOn(String url) {          // was private
         try (Playwright playwright = Playwright.create()) {
             Browser browser = playwright.chromium().launch();
             com.microsoft.playwright.Page browserPage = browser.newPage();
             browserPage.navigate(url);
+            String title = browserPage.title();
             AxeResults results = new AxeBuilder(browserPage).analyze();
             browser.close();
-            return results;
+            return new PageScanResult(title, results);
         }
     }
 
     @Transactional
-    public void storeResults(UUID jobId, String url, AxeResults results) {
+    public void storeResults(UUID jobId, String url, PageScanResult scanResult) {
         ScanJob job = scanJobRepository.findById(jobId).orElseThrow();
-        Page page = pageRepository.save(new Page(job, url));
+        Page page = pageRepository.save(new Page(job, url, scanResult.title()));
 
         List<Violation> toSave = new ArrayList<>();
-        results.getViolations().forEach(rule ->
+        scanResult.axeResults().getViolations().forEach(rule ->
                 rule.getNodes().forEach(node ->
                         toSave.add(new Violation(
                                 page,
@@ -82,7 +83,8 @@ public class ScanService {
                                 rule.getHelp(),
                                 rule.getHelpUrl(),
                                 node.getTarget().toString(),
-                                node.getHtml()
+                                node.getHtml(),
+                                String.join(",", rule.getTags())
                         ))
                 )
         );
@@ -108,9 +110,13 @@ public class ScanService {
                 continue;
             }
             anyViolations = true;
-            report.append("Page: ").append(page.getUrl()).append("\n");
+            String pageLabel = (page.getTitle() != null && !page.getTitle().isBlank())
+                    ? page.getTitle() + " (" + page.getUrl() + ")"
+                    : page.getUrl();
+            report.append("Page: ").append(pageLabel).append("\n");
             for (Violation v : violations) {
                 report.append("- [").append(v.getImpact()).append("] ")
+                        .append(v.getCategory().getLabel()).append(" — ")
                         .append(v.getRuleId()).append(": ").append(v.getHelpText()).append("\n");
             }
             report.append("\n");
