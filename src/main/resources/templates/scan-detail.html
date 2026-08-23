@@ -32,6 +32,12 @@
             &middot; <span th:text="${#lists.size(pageReports)}">0</span> page(s) scanned
             &middot; <span th:text="${totalViolations}">0</span> violation(s) found
         </p>
+        <p class="law-note">Checked against
+            <a href="https://www.w3.org/WAI/WCAG2AA-Conformance" target="_blank" rel="noopener noreferrer">WCAG 2.0 Level AA</a>
+            &mdash; the standard required by
+            <a href="https://www.ontario.ca/laws/regulation/110191" target="_blank" rel="noopener noreferrer">O. Reg. 191/11</a>
+            under the AODA.
+        </p>
 
         <p th:if="${job.status.name() == 'FAILED'}" class="interpretation" style="border-left-color: var(--critical)">
             Scan failed: <span th:text="${job.errorMessage}">error</span>
