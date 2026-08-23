@@ -43,6 +43,9 @@ public class ScanJob {
     @Column(name = "is_example", nullable = false)
     private boolean isExample = false;
 
+    @Column(name = "viewed_at")
+    private OffsetDateTime viewedAt;
+
     protected ScanJob() { }          // required by JPA
 
     public ScanJob(String rootUrl) {
@@ -60,6 +63,28 @@ public class ScanJob {
     public String getRootUrl() { return rootUrl; }
     public User getOwner() { return owner; }
     public boolean isExample() { return isExample; }
+    public OffsetDateTime getViewedAt() { return viewedAt; }
+
+    public boolean isAnonymous() {
+        return owner == null && !isExample;
+    }
+
+    public void markViewed() {
+        this.viewedAt = OffsetDateTime.now();
+    }
+
+    /** Owner sees their own scans forever; anyone sees the curated example; an
+     *  anonymous scan is viewable exactly once, then it's gone - by design,
+     *  it was never saved to an account. */
+    public boolean isViewableBy(User viewer) {
+        if (isExample) {
+            return true;
+        }
+        if (owner != null) {
+            return viewer != null && owner.getId().equals(viewer.getId());
+        }
+        return viewedAt == null;
+    }
     public ScanStatus getStatus() { return status; }
     public OffsetDateTime getCreatedAt() { return createdAt; }
     public OffsetDateTime getStartedAt() { return startedAt; }

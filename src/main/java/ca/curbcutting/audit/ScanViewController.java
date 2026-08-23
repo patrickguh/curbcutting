@@ -6,6 +6,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
 
@@ -17,15 +19,18 @@ import java.util.stream.Collectors;
 @Controller
 public class ScanViewController {
 
+    private final ScanService scanService;
     private final ScanJobRepository scanJobRepository;
     private final PageRepository pageRepository;
     private final ViolationRepository violationRepository;
     private final UserRepository userRepository;
 
-    public ScanViewController(ScanJobRepository scanJobRepository,
+    public ScanViewController(ScanService scanService,
+                              ScanJobRepository scanJobRepository,
                               PageRepository pageRepository,
                               ViolationRepository violationRepository,
                               UserRepository userRepository) {
+        this.scanService = scanService;
         this.scanJobRepository = scanJobRepository;
         this.pageRepository = pageRepository;
         this.violationRepository = violationRepository;
@@ -50,15 +55,29 @@ public class ScanViewController {
         return "scans";
     }
 
+    @PostMapping("/guest-scan")
+    public String guestScan(@RequestParam String url) {
+        ScanJob job = scanService.enqueue(url);
+        return "redirect:/scans/" + job.getId() + "/report";
+    }
+
     @GetMapping("/scans/{id}/report")
     public String scanReport(@PathVariable UUID id, Authentication authentication, Model model) {
         ScanJob job = scanJobRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         User viewer = currentUser(authentication);
-        boolean isOwner = job.getOwner() != null && viewer != null && job.getOwner().getId().equals(viewer.getId());
-        if (!job.isExample() && !isOwner) {
+        if (!job.isViewableBy(viewer)) {
+            if (job.isAnonymous()) {
+                // already shown once - that's expected, not an access violation
+                return "scan-expired";
+            }
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+
+        boolean isTerminal = job.getStatus() == ScanStatus.DONE || job.getStatus() == ScanStatus.FAILED;
+        if (job.isAnonymous() && isTerminal) {
+            scanService.recordAnonymousView(id);
         }
 
         List<PageReport> pageReports = pageRepository.findByScanJobId(id).stream()

@@ -376,6 +376,19 @@ form.new-scan:focus-within {
     border-color: var(--border-strong);
 }
 
+.law-card form.new-scan {
+    background: none;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    margin: 1rem 0 0;
+    animation: none;
+}
+
+.law-card form.new-scan:focus-within {
+    box-shadow: none;
+}
+
 form.new-scan > div {
     flex: 1 1 20rem;
 }

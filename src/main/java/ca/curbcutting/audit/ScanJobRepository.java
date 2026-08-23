@@ -22,6 +22,7 @@ public interface ScanJobRepository extends JpaRepository<ScanJob, UUID> {
     List<ScanJob> findByStatusAndStartedAtBefore(ScanStatus status, OffsetDateTime cutoff);
     List<ScanJob> findByOwnerId(UUID ownerId);
     Optional<ScanJob> findFirstByIsExampleTrue();
+    List<ScanJob> findByOwnerIsNullAndIsExampleFalse();
 }
 
 interface PageRepository extends JpaRepository<Page, UUID> {

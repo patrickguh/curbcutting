@@ -151,6 +151,26 @@ public class ScanService {
                 .forEach(job -> retryOrFail(job, "stale: exceeded processing timeout"));
     }
 
+    @Transactional
+    public void recordAnonymousView(UUID jobId) {
+        ScanJob job = scanJobRepository.findById(jobId).orElseThrow();
+        if (job.isAnonymous() && job.getViewedAt() == null) {
+            job.markViewed();
+        }
+    }
+
+    @Transactional
+    public void purgeAnonymousScans(Duration retention) {
+        OffsetDateTime cutoff = OffsetDateTime.now().minus(retention);
+        scanJobRepository.findByOwnerIsNullAndIsExampleFalse().forEach(job -> {
+            boolean alreadyShown = job.getViewedAt() != null;
+            boolean abandoned = job.getCreatedAt().isBefore(cutoff);
+            if (alreadyShown || abandoned) {
+                scanJobRepository.delete(job);
+            }
+        });
+    }
+
     private void retryOrFail(ScanJob job, String message) {
         job.incrementAttempts();
         if (job.getAttempts() < MAX_ATTEMPTS) {

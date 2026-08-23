@@ -142,17 +142,26 @@
         <p class="eyebrow">Get started</p>
         <h2 id="cta-heading">
             <span sec:authorize="isAuthenticated()">Scan your own website</span>
-            <span sec:authorize="isAnonymous()">Create a free account to scan your own website</span>
+            <span sec:authorize="isAnonymous()">Try a quick scan &mdash; no account needed</span>
         </h2>
-        <p>
-            <span sec:authorize="isAuthenticated()">Your scans and their reports are private to your account.</span>
-            <span sec:authorize="isAnonymous()">Scans are private to your account &mdash; log in or sign up to
-                submit a URL and keep track of your own scan history.</span>
-        </p>
-        <div class="law-links">
-            <a href="/account/scans" sec:authorize="isAuthenticated()">Go to My Scans</a>
-            <a href="/login" sec:authorize="isAnonymous()">Log in</a>
-            <a href="/register" sec:authorize="isAnonymous()" class="cta-primary">Sign up free</a>
+        <p sec:authorize="isAuthenticated()">Your scans and their reports are private to your account.</p>
+        <p sec:authorize="isAnonymous()">Scan any website right now, no sign-up required. The report is shown
+            once and isn't saved &mdash; create a free account if you'd rather keep a private, permanent history.</p>
+
+        <form class="new-scan" method="post" th:action="@{/guest-scan}" aria-label="Quick scan without an account" sec:authorize="isAnonymous()">
+            <div>
+                <label for="guest-url">Website URL to scan</label>
+                <input type="url" id="guest-url" name="url" placeholder="https://example.com" required>
+            </div>
+            <button type="submit">Scan</button>
+        </form>
+
+        <div class="law-links" sec:authorize="isAuthenticated()">
+            <a href="/account/scans">Go to My Scans</a>
+        </div>
+        <div class="law-links" sec:authorize="isAnonymous()">
+            <a href="/login">Log in</a>
+            <a href="/register" class="cta-primary">Sign up for a saved history</a>
         </div>
     </section>
 </main>

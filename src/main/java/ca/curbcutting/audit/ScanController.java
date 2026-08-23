@@ -41,9 +41,7 @@ public class ScanController {
     private ScanJob requireViewable(UUID id, Authentication authentication) {
         ScanJob job = scanJobRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        User viewer = currentUser(authentication);
-        boolean isOwner = job.getOwner() != null && viewer != null && job.getOwner().getId().equals(viewer.getId());
-        if (!job.isExample() && !isOwner) {
+        if (!job.isViewableBy(currentUser(authentication))) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
         return job;
