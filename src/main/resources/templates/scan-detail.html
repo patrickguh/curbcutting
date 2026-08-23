@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="'Curbcutting &mdash; Report for ' + ${job.rootUrl}">Curbcutting &mdash; Report</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header>
+    <h1>Curbcutting</h1>
+    <nav><a href="/">&larr; Back to all scans</a></nav>
+</header>
+
+<main>
+    <section aria-labelledby="report-heading">
+        <h2 id="report-heading">
+            Report for <span th:text="${job.rootUrl}">https://example.com</span>
+        </h2>
+        <p>
+            Status: <span class="status" th:classappend="'status-' + ${job.status}" th:text="${job.status}">DONE</span>
+            &middot; <span th:text="${#lists.size(pageReports)}">0</span> page(s) scanned
+            &middot; <span th:text="${totalViolations}">0</span> violation(s) found
+        </p>
+
+        <p th:if="${job.status.name() == 'FAILED'}" class="interpretation" style="border-left-color: var(--critical)">
+            Scan failed: <span th:text="${job.errorMessage}">error</span>
+        </p>
+    </section>
+
+    <section aria-labelledby="interpretation-heading" th:if="${job.interpretation != null}">
+        <h2 id="interpretation-heading">Summary</h2>
+        <div class="interpretation" th:text="${job.interpretation}">AI-generated summary appears here.</div>
+    </section>
+    <section aria-labelledby="interpretation-heading" th:if="${job.status.name() == 'DONE' and job.interpretation == null}">
+        <h2 id="interpretation-heading">Summary</h2>
+        <p class="empty-state">No AI summary is available for this scan.</p>
+    </section>
+
+    <section aria-labelledby="pages-heading">
+        <h2 id="pages-heading">Violations by page</h2>
+
+        <p class="empty-state" th:if="${#lists.isEmpty(pageReports)}">No pages were scanned.</p>
+
+        <article class="page-report" th:each="pr : ${pageReports}">
+            <h3 th:text="${pr.page.url}">https://example.com/page</h3>
+
+            <p class="empty-state" th:if="${#lists.isEmpty(pr.violations)}">No violations found on this page.</p>
+
+            <table th:unless="${#lists.isEmpty(pr.violations)}">
+                <caption th:text="'Violations on ' + ${pr.page.url}">Violations</caption>
+                <thead>
+                <tr>
+                    <th scope="col">Impact</th>
+                    <th scope="col">Rule</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Element</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="v : ${pr.violations}">
+                    <td><span class="impact" th:classappend="'impact-' + ${v.impact}" th:text="${v.impact}">critical</span></td>
+                    <td>
+                        <a th:if="${v.helpUrl != null}" th:href="${v.helpUrl}" th:text="${v.ruleId}" target="_blank" rel="noopener noreferrer">rule-id</a>
+                        <span th:unless="${v.helpUrl != null}" th:text="${v.ruleId}">rule-id</span>
+                    </td>
+                    <td th:text="${v.helpText}">Description of the issue</td>
+                    <td><code th:text="${v.target}">selector</code></td>
+                </tr>
+                </tbody>
+            </table>
+        </article>
+    </section>
+</main>
+</body>
+</html>

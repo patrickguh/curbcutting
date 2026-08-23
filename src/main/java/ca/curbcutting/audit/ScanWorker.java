@@ -31,6 +31,13 @@ public class ScanWorker {
             } catch (Exception e) {
                 log.warn("Scan job {} failed: {}", job.getId(), e.getMessage());
                 scanService.recordFailure(job.getId(), e.getMessage());
+                return;
+            }
+
+            try {
+                scanService.interpretResults(job.getId());
+            } catch (Exception e) {
+                log.warn("Interpretation failed for job {}: {}", job.getId(), e.getMessage());
             }
         });
     }

@@ -24,15 +24,18 @@ public class ScanService {
     private final PageRepository pageRepository;
     private final ViolationRepository violationRepository;
     private final SiteCrawler siteCrawler;
+    private final ViolationInterpreter violationInterpreter;
 
     public ScanService(ScanJobRepository scanJobRepository,
                        PageRepository pageRepository,
                        ViolationRepository violationRepository,
-                       SiteCrawler siteCrawler) {
+                       SiteCrawler siteCrawler,
+                       ViolationInterpreter violationInterpreter) {
         this.scanJobRepository = scanJobRepository;
         this.pageRepository = pageRepository;
         this.violationRepository = violationRepository;
         this.siteCrawler = siteCrawler;
+        this.violationInterpreter = violationInterpreter;
     }
 
     @Transactional
@@ -89,6 +92,35 @@ public class ScanService {
     @Transactional
     public void markDone(UUID jobId) {
         scanJobRepository.findById(jobId).orElseThrow().markDone();
+    }
+
+    @Transactional
+    public void interpretResults(UUID jobId) {
+        ScanJob job = scanJobRepository.findById(jobId).orElseThrow();
+        List<Page> pages = pageRepository.findByScanJobId(jobId);
+
+        StringBuilder report = new StringBuilder();
+        report.append("Scan of ").append(job.getRootUrl()).append("\n\n");
+        boolean anyViolations = false;
+        for (Page page : pages) {
+            List<Violation> violations = violationRepository.findByPageId(page.getId());
+            if (violations.isEmpty()) {
+                continue;
+            }
+            anyViolations = true;
+            report.append("Page: ").append(page.getUrl()).append("\n");
+            for (Violation v : violations) {
+                report.append("- [").append(v.getImpact()).append("] ")
+                        .append(v.getRuleId()).append(": ").append(v.getHelpText()).append("\n");
+            }
+            report.append("\n");
+        }
+
+        String interpretation = anyViolations
+                ? violationInterpreter.interpret(report.toString())
+                : "No accessibility violations were detected across " + pages.size() + " page(s) scanned.";
+
+        job.setInterpretation(interpretation);
     }
 
     @Transactional

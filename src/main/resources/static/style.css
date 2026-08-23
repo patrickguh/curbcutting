@@ -1,0 +1,156 @@
+:root {
+    color-scheme: light dark;
+    --border: #d0d5db;
+    --muted: #5a6472;
+    --bg-subtle: #f4f6f8;
+    --link: #0b5fff;
+    --critical: #b3261e;
+    --serious: #b45309;
+    --moderate: #8a6d00;
+    --minor: #4b5563;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    max-width: 60rem;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 3rem;
+    line-height: 1.5;
+}
+
+header h1 {
+    margin-bottom: 0.25rem;
+}
+
+header p.tagline {
+    color: var(--muted);
+    margin-top: 0;
+}
+
+nav a {
+    color: var(--link);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+caption {
+    text-align: left;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+th, td {
+    text-align: left;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+}
+
+th {
+    font-weight: 600;
+    background: var(--bg-subtle);
+}
+
+form.new-scan {
+    display: flex;
+    gap: 0.5rem;
+    align-items: end;
+    flex-wrap: wrap;
+    margin: 1rem 0 1.5rem;
+    padding: 1rem;
+    background: var(--bg-subtle);
+    border-radius: 0.5rem;
+}
+
+form.new-scan label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+input[type="url"] {
+    min-width: 20rem;
+    padding: 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 0.25rem;
+    font-size: 1rem;
+}
+
+button {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--link);
+    background: var(--link);
+    color: #fff;
+    border-radius: 0.25rem;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+button:hover, button:focus-visible {
+    filter: brightness(1.1);
+}
+
+.status {
+    display: inline-block;
+    padding: 0.1rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 1px solid var(--border);
+}
+
+.status-QUEUED { color: var(--muted); }
+.status-RUNNING { color: var(--link); }
+.status-DONE { color: #0f7b3e; }
+.status-FAILED { color: var(--critical); }
+
+.impact {
+    font-weight: 600;
+}
+
+.impact-critical { color: var(--critical); }
+.impact-serious { color: var(--serious); }
+.impact-moderate { color: var(--moderate); }
+.impact-minor { color: var(--minor); }
+
+.interpretation {
+    background: var(--bg-subtle);
+    border-left: 4px solid var(--link);
+    padding: 1rem 1.25rem;
+    border-radius: 0.25rem;
+    white-space: pre-wrap;
+}
+
+.page-report {
+    margin: 1.5rem 0;
+}
+
+.page-report h3 {
+    word-break: break-all;
+}
+
+.empty-state {
+    color: var(--muted);
+    font-style: italic;
+}
+
+.flash {
+    background: #e7f6ec;
+    border: 1px solid #0f7b3e;
+    color: #0f5132;
+    padding: 0.75rem 1rem;
+    border-radius: 0.25rem;
+    margin-bottom: 1rem;
+}
+
+code {
+    font-size: 0.85em;
+}
