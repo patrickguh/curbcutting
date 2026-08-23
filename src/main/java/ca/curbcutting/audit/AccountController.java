@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.security.SecureRandom;
+import java.time.OffsetDateTime;
 import java.util.Comparator;
 import java.util.List;
 
@@ -16,20 +18,28 @@ import java.util.List;
 public class AccountController {
 
     private static final int MIN_PASSWORD_LENGTH = 8;
+    private static final int RESET_CODE_VALID_MINUTES = 15;
+    private static final SecureRandom RANDOM = new SecureRandom();
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final ScanJobRepository scanJobRepository;
     private final ScanService scanService;
+    private final PasswordResetCodeRepository passwordResetCodeRepository;
+    private final EmailService emailService;
 
     public AccountController(UserRepository userRepository,
                              PasswordEncoder passwordEncoder,
                              ScanJobRepository scanJobRepository,
-                             ScanService scanService) {
+                             ScanService scanService,
+                             PasswordResetCodeRepository passwordResetCodeRepository,
+                             EmailService emailService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.scanJobRepository = scanJobRepository;
         this.scanService = scanService;
+        this.passwordResetCodeRepository = passwordResetCodeRepository;
+        this.emailService = emailService;
     }
 
     @GetMapping("/login")
@@ -94,5 +104,78 @@ public class AccountController {
         ScanJob job = scanService.enqueue(url, user);
         redirectAttributes.addFlashAttribute("submittedId", job.getId());
         return "redirect:/account/scans";
+    }
+
+    @GetMapping("/forgot-password")
+    public String forgotPasswordForm() {
+        return "forgot-password";
+    }
+
+    @PostMapping("/forgot-password")
+    public String forgotPassword(@RequestParam String email, RedirectAttributes redirectAttributes) {
+        String normalizedEmail = email == null ? "" : email.strip().toLowerCase();
+
+        userRepository.findByEmail(normalizedEmail).ifPresent(user -> {
+            String code = generateCode();
+            passwordResetCodeRepository.save(new PasswordResetCode(
+                    user, code, OffsetDateTime.now().plusMinutes(RESET_CODE_VALID_MINUTES)));
+            emailService.sendPasswordResetCode(user.getEmail(), code);
+        });
+
+        // Same message regardless of whether the account exists, so this can't be used to enumerate accounts.
+        redirectAttributes.addFlashAttribute("codeSent", true);
+        redirectAttributes.addAttribute("email", normalizedEmail);
+        return "redirect:/reset-password";
+    }
+
+    @GetMapping("/reset-password")
+    public String resetPasswordForm(@RequestParam(required = false) String email, Model model) {
+        model.addAttribute("email", email == null ? "" : email);
+        return "reset-password";
+    }
+
+    @PostMapping("/reset-password")
+    public String resetPassword(@RequestParam String email,
+                                @RequestParam String code,
+                                @RequestParam String password,
+                                @RequestParam("confirm-password") String confirmPassword,
+                                RedirectAttributes redirectAttributes,
+                                Model model) {
+        String normalizedEmail = email == null ? "" : email.strip().toLowerCase();
+
+        if (password == null || password.length() < MIN_PASSWORD_LENGTH) {
+            model.addAttribute("error", "Password must be at least " + MIN_PASSWORD_LENGTH + " characters.");
+            model.addAttribute("email", email);
+            return "reset-password";
+        }
+        if (!password.equals(confirmPassword)) {
+            model.addAttribute("error", "Passwords do not match.");
+            model.addAttribute("email", email);
+            return "reset-password";
+        }
+
+        User user = userRepository.findByEmail(normalizedEmail).orElse(null);
+        PasswordResetCode validCode = user == null ? null : passwordResetCodeRepository
+                .findByUserIdOrderByCreatedAtDesc(user.getId()).stream()
+                .filter(c -> c.isValid(code))
+                .findFirst()
+                .orElse(null);
+
+        if (validCode == null) {
+            model.addAttribute("error", "That code is invalid or has expired. Request a new one below.");
+            model.addAttribute("email", email);
+            return "reset-password";
+        }
+
+        user.setPasswordHash(passwordEncoder.encode(password));
+        userRepository.save(user);
+        validCode.markUsed();
+        passwordResetCodeRepository.save(validCode);
+        redirectAttributes.addFlashAttribute("passwordReset", true);
+        return "redirect:/login";
+    }
+
+    private static String generateCode() {
+        return String.format("%06d", RANDOM.nextInt(1_000_000));
     }
 }
