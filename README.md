@@ -7,9 +7,19 @@ including an AI-generated plain-language summary of the most important issues.
 
 **Live:** https://allyscan.fly.dev/
 
-Built as a 21-day self-paced learning project to go from "can write a script"
-to "can explain every architectural decision in an interview" — then kept
-growing past Day 21 as a real, deployed side project.
+## Features
+
+- **Full-site scanning.** Give it one URL and it crawls same-host links (BFS,
+  capped at 20 pages) and scans every page it finds, not just the one you
+  submitted.
+- **Plain-language AI summaries.** Raw axe-core violations are dense; each
+  scan gets a prioritized, plain-English summary of what's actually wrong and
+  why it matters.
+- **Accounts, or not.** Sign up for a free account to keep a private, permanent
+  scan history, or scan without one — anonymous scans are a genuine one-time
+  view, purged from the database an hour later rather than kept indefinitely.
+- **Password reset via email**, with time-limited one-time codes.
+- **Dark/light theming**, remembered per device.
 
 ## Architecture
 
@@ -135,35 +145,3 @@ against a brand-new database on first boot is a real race, not a theoretical
 one.
 
 `main` pushes trigger `.github/workflows/fly-deploy.yml` via `FLY_API_TOKEN`.
-
-## Curriculum log
-
-- **Days 1–2:** `/scan?url=...` synchronous endpoint, raw axe-core JSON.
-- **Days 3–5:** Postgres + Flyway migrations, JPA entities, persisted scans.
-- **Day 6:** Converted to an async job queue polled by a `@Scheduled` worker.
-- **Days 7–10:** Concurrent-safe job claiming (`SKIP LOCKED`), retry/reaper
-  logic for crashed workers, jsoup-based same-host crawler.
-- **Days 13–15:** Claude API interpretation layer — violations are summarized
-  into a plain-language, prioritized report.
-- **Days 16–18:** Thymeleaf report UI (scan list + submit form, per-scan
-  violation report grouped by page).
-- **Days 19–21:** End-to-end verification against real Postgres, README and
-  architecture write-up, first working deployment to Fly.io + Neon.
-
-## Since Day 21
-
-The curriculum was the floor, not the ceiling — kept building after "done":
-
-- Accounts (email/password, BCrypt), scans scoped to their owner, and a
-  forgot-password flow with emailed one-time reset codes.
-- Anonymous scanning as a genuine one-time view (not just hidden — actually
-  purged after an hour) instead of requiring an account for every scan.
-- A full UI redesign: persistent sidebar navigation, animated status badges,
-  violation categorization, a homepage rewrite with a "How it works" page,
-  dark/light theming, and a consolidated single-card settings page.
-- Persistent "keep me signed in" via remember-me tokens.
-- Rebranded from Curbcutting to Allyscan — new package, database, Fly app,
-  and branding throughout.
-- Switched the summary model from Opus 5 to Haiku 4.5 (cost-appropriate for
-  a short summarization task) and fixed the summary rendering as real HTML
-  instead of literal Markdown syntax.
