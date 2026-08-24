@@ -1,4 +1,4 @@
-package ca.curbcutting.audit;
+package ca.allyscan.audit;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

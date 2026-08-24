@@ -1,4 +1,4 @@
-package ca.curbcutting.audit;
+package ca.allyscan.audit;
 
 import com.anthropic.client.AnthropicClient;
 import com.anthropic.client.okhttp.AnthropicOkHttpClient;

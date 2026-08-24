@@ -1,4 +1,4 @@
-package ca.curbcutting.audit;
+package ca.allyscan.audit;
 
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;

@@ -1,4 +1,4 @@
-package ca.curbcutting.audit;
+package ca.allyscan.audit;
 
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;

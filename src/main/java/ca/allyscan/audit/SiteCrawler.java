@@ -1,4 +1,4 @@
-package ca.curbcutting.audit;
+package ca.allyscan.audit;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

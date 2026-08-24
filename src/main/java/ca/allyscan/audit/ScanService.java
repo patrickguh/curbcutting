@@ -1,4 +1,4 @@
-package ca.curbcutting.audit;
+package ca.allyscan.audit;
 
 import com.deque.html.axecore.playwright.AxeBuilder;
 import com.deque.html.axecore.results.AxeResults;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 import java.time.OffsetDateTime;
 import java.util.Optional;
-import ca.curbcutting.audit.ScanStatus;
+import ca.allyscan.audit.ScanStatus;
 
 @Service
 public class ScanService {

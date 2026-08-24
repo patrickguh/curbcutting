@@ -1,6 +1,6 @@
-# Curbcutting
+# Allyscan
 
-An automated web accessibility auditor. Submit a URL, and Curbcutting crawls the
+An automated web accessibility auditor. Submit a URL, and Allyscan crawls the
 site, runs an [axe-core](https://github.com/dequelabs/axe-core) accessibility
 scan (WCAG/AODA rules) against every page it finds, and produces a report —
 including an AI-generated plain-language summary of the most important issues.
@@ -66,8 +66,8 @@ works fully without it, just without the "Summary" section on the report
 page).
 
 ```bash
-docker run -d --name curbcutting-db -p 5432:5432 \
-  -e POSTGRES_DB=curbcutting -e POSTGRES_PASSWORD=devpassword postgres:16
+docker run -d --name allyscan-db -p 5432:5432 \
+  -e POSTGRES_DB=allyscan -e POSTGRES_PASSWORD=devpassword postgres:16
 
 ./mvnw spring-boot:run
 ```

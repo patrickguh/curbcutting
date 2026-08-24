@@ -1,4 +1,4 @@
-package ca.curbcutting.audit;
+package ca.allyscan.audit;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -54,7 +54,7 @@ public class SecurityConfig {
                 .tokenRepository(persistentTokenRepository)
                 .userDetailsService(userDetailsService)
                 .tokenValiditySeconds(REMEMBER_ME_VALIDITY_SECONDS)
-                .key("curbcutting-remember-me")
+                .key("allyscan-remember-me")
             )
             .logout(logout -> logout
                 .logoutUrl("/logout")

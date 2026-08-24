@@ -1,4 +1,4 @@
-package ca.curbcutting.audit;
+package ca.allyscan.audit;
 
 import jakarta.persistence.*;
 import java.util.UUID;

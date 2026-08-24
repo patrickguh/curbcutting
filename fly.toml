@@ -1,9 +1,9 @@
-# fly.toml app configuration file generated for curbcutting on 2026-08-17T14:54:18-07:00
+# fly.toml app configuration file generated for allyscan
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'curbcutting'
+app = 'allyscan'
 primary_region = 'sjc'
 
 [build]

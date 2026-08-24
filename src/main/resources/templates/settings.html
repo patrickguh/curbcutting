@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Curbcutting &mdash; Settings</title>
+    <title>Allyscan &mdash; Settings</title>
     <link rel="stylesheet" href="/style.css">
     <script>(function(){try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark'||t==='system'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%235b4bf0'/%3E%3Cpath d='M4 17h4l3-8h6l3 8' stroke='white' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
@@ -21,7 +21,7 @@
 
             <section class="auth-card" aria-labelledby="theme-heading" style="margin:0 0 1.5rem;">
                 <h2 id="theme-heading" style="font-size:1.1rem;">Appearance</h2>
-                <p class="auth-switch" style="margin:0 0 1rem; text-align:left;">Choose how Curbcutting looks on this device.</p>
+                <p class="auth-switch" style="margin:0 0 1rem; text-align:left;">Choose how Allyscan looks on this device.</p>
                 <div class="theme-switch" role="group" aria-label="Theme">
                     <button type="button" class="theme-option" data-theme-value="system" aria-pressed="false">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
@@ -50,7 +50,7 @@
 
             <section class="auth-card" aria-labelledby="logout-heading" sec:authorize="isAuthenticated()">
                 <h2 id="logout-heading" style="font-size:1.1rem;">Log out</h2>
-                <p class="auth-switch" style="margin:0 0 1.2rem; text-align:left;">Sign out of Curbcutting on this device.</p>
+                <p class="auth-switch" style="margin:0 0 1.2rem; text-align:left;">Sign out of Allyscan on this device.</p>
                 <form method="post" th:action="@{/logout}">
                     <button type="submit">Log out</button>
                 </form>
