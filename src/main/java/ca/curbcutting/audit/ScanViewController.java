@@ -62,6 +62,11 @@ public class ScanViewController {
         return "scans";
     }
 
+    @GetMapping("/how-it-works")
+    public String howItWorks() {
+        return "how-it-works";
+    }
+
     @PostMapping("/guest-scan")
     public String guestScan(@RequestParam String url) {
         ScanJob job = scanService.enqueue(url);

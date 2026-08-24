@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Curbcutting &mdash; How it works</title>
+    <link rel="stylesheet" href="/style.css">
+    <script>(function(){try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark'||t==='system'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%235b4bf0'/%3E%3Cpath d='M4 17h4l3-8h6l3 8' stroke='white' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+</head>
+<body>
+<div class="app-shell">
+    <div th:replace="~{fragments/shell :: sidebar(active='how-it-works')}"></div>
+    <div class="sidebar-backdrop"></div>
+
+    <div class="app-main">
+        <div th:replace="~{fragments/shell :: topbar}"></div>
+
+        <div class="app-main-inner" style="padding-top:2rem; max-width:44rem;">
+            <p class="eyebrow" style="text-transform:uppercase; letter-spacing:0.08em; font-size:0.75rem; font-weight:700; color:var(--accent); margin:0 0 0.4rem;">Under the hood</p>
+            <h2 style="margin:0 0 0.5rem; font-size:1.9rem; font-weight:800; letter-spacing:-0.02em;">From a URL to a fixed page</h2>
+            <p style="color:var(--muted); margin:0 0 2.25rem; max-width:36rem;">Here's exactly what happens between pasting in a link and knowing what to fix &mdash; start to finish, no steps skipped.</p>
+
+            <ol class="steps">
+                <li class="step">
+                    <span class="step-num">1</span>
+                    <div class="step-body">
+                        <h3>Paste in a URL</h3>
+                        <p>Drop any website's address into the scan box on the home page. No account needed &mdash; a guest scan works as a one-time view.</p>
+                    </div>
+                </li>
+                <li class="step">
+                    <span class="step-num">2</span>
+                    <div class="step-body">
+                        <h3>The job gets queued</h3>
+                        <p>Curbcutting writes a row to Postgres with status <code>QUEUED</code> and hands the page back to you immediately &mdash; a full-site scan can take minutes, so nothing waits on it.</p>
+                    </div>
+                </li>
+                <li class="step">
+                    <span class="step-num">3</span>
+                    <div class="step-body">
+                        <h3>A worker picks it up</h3>
+                        <p>A background worker polls the queue every couple of seconds, claims the job, and marks it <code>RUNNING</code>.</p>
+                    </div>
+                </li>
+                <li class="step">
+                    <span class="step-num">4</span>
+                    <div class="step-body">
+                        <h3>The site gets crawled</h3>
+                        <p>A same-host crawler follows links breadth-first from the URL you gave it, discovering up to 20 pages to check.</p>
+                    </div>
+                </li>
+                <li class="step">
+                    <span class="step-num">5</span>
+                    <div class="step-body">
+                        <h3>Every page gets scanned</h3>
+                        <p>A real, headless Chromium browser opens each page and runs an axe-core accessibility scan against it &mdash; the same engine used across the industry for WCAG 2.0 AA / AODA checks.</p>
+                    </div>
+                </li>
+                <li class="step">
+                    <span class="step-num">6</span>
+                    <div class="step-body">
+                        <h3>Violations are recorded</h3>
+                        <p>Every failing rule is saved per page, tagged by category (ARIA, color contrast, forms, keyboard access, and more) and by impact &mdash; critical, serious, moderate, or minor.</p>
+                    </div>
+                </li>
+                <li class="step">
+                    <span class="step-num">7</span>
+                    <div class="step-body">
+                        <h3>Claude writes a plain-language summary</h3>
+                        <p>The full violation list is handed to the Claude API, which prioritizes the issues and explains them in plain language &mdash; a value-add on top of the raw report, not a dependency for it.</p>
+                    </div>
+                </li>
+                <li class="step">
+                    <span class="step-num">8</span>
+                    <div class="step-body">
+                        <h3>You open the report</h3>
+                        <p>Once the job flips to <code>DONE</code>, the report shows every violation grouped by page, filterable by category, alongside the AI summary.</p>
+                    </div>
+                </li>
+                <li class="step step-final">
+                    <span class="step-num">9</span>
+                    <div class="step-body">
+                        <h3>Click through to fix it</h3>
+                        <p>Each violation's rule name links straight to that rule's page on <strong>Deque University</strong> &mdash; axe-core's own documentation &mdash; with a plain-English explanation of the problem and exactly how to fix it in your markup.</p>
+                    </div>
+                </li>
+            </ol>
+
+            <div class="law-links" style="margin-top:0.5rem;">
+                <a href="/" class="cta-primary">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+                    Try a scan
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<script defer src="/shell.js"></script>
+</body>
+</html>

@@ -62,75 +62,99 @@
                     <div th:replace="~{fragments/scan-history :: table(${jobs})}"></div>
                 </section>
 
-                <section class="law-card" aria-labelledby="example-heading" th:if="${exampleJob}">
+                <section class="law-card tilt-a" aria-labelledby="example-heading" th:if="${exampleJob}">
+                <div class="law-card-float">
+                <div class="law-card-surface">
+                <div class="law-card-grid">
                     <p class="eyebrow">See it in action</p>
-                    <h2 id="example-heading">Example report: Deque University's Mars demo</h2>
-                    <p>That's a real, deliberately-broken accessibility test site &mdash; built specifically to be scanned.
-                        Here's exactly what a Curbcutting report looks like against it: violations by page, categorized by
-                        type, with an AI-generated summary.</p>
-                    <div class="law-links">
-                        <a th:href="@{'/scans/' + ${exampleJob.id} + '/report'}">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg>
-                            View the example report
-                        </a>
+                    <div class="law-card-content">
+                        <h2 id="example-heading">Example report: Deque University's Mars demo</h2>
+                        <p>That's a real, deliberately-broken accessibility test site &mdash; built specifically to be scanned.
+                            Here's exactly what a Curbcutting report looks like against it: violations by page, categorized by
+                            type, with an AI-generated summary.</p>
+                        <div class="law-links">
+                            <a th:href="@{'/scans/' + ${exampleJob.id} + '/report'}">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg>
+                                View the example report
+                            </a>
+                        </div>
                     </div>
+                </div>
+                </div>
+                </div>
                 </section>
 
-                <section class="law-card" aria-labelledby="law-heading">
+                <section class="law-card tilt-b" aria-labelledby="law-heading">
+                <div class="law-card-float">
+                <div class="law-card-surface">
+                <div class="law-card-grid">
                     <p class="eyebrow">The regulation</p>
-                    <h2 id="law-heading">Ontario Regulation 191/11 &mdash; Integrated Accessibility Standards</h2>
-                    <p>Under the <em>Accessibility for Ontarians with Disabilities Act, 2005</em>, Section 14 of O. Reg. 191/11
-                        sets the legal bar for websites:</p>
-                    <blockquote class="law-quote">
-                        &ldquo;Designated public sector organizations and large organizations shall make their internet
-                        websites and web content conform with the World Wide Web Consortium Web Content Accessibility
-                        Guidelines (WCAG) 2.0, initially at Level A and increasing to Level AA.&rdquo;
-                        <br><small>&mdash; O. Reg. 191/11, s. 14</small>
-                    </blockquote>
+                    <div class="law-card-content">
+                        <h2 id="law-heading">Ontario Regulation 191/11 &mdash; Integrated Accessibility Standards</h2>
+                        <p>Under the <em>Accessibility for Ontarians with Disabilities Act, 2005</em>, Section 14 of O. Reg. 191/11
+                            sets the legal bar for websites:</p>
+                        <blockquote class="law-quote">
+                            &ldquo;Designated public sector organizations and large organizations shall make their internet
+                            websites and web content conform with the World Wide Web Consortium Web Content Accessibility
+                            Guidelines (WCAG) 2.0, initially at Level A and increasing to Level AA.&rdquo;
+                            <br><small>&mdash; O. Reg. 191/11, s. 14</small>
+                        </blockquote>
 
-                    <div class="timeline">
-                        <div class="timeline-track"><div class="timeline-fill"></div></div>
-                        <div class="timeline-labels">
-                            <span><strong>Jan 1, 2014</strong>New sites: Level A</span>
-                            <span><strong>Jan 1, 2021</strong>All sites: Level AA (current standard)</span>
+                        <div class="timeline">
+                            <div class="timeline-track"><div class="timeline-fill"></div></div>
+                            <div class="timeline-labels">
+                                <span><strong>Jan 1, 2014</strong>New sites: Level A</span>
+                                <span><strong>Jan 1, 2021</strong>All sites: Level AA (current standard)</span>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="law-links">
-                        <a href="https://www.ontario.ca/laws/regulation/110191" target="_blank" rel="noopener noreferrer">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h6M9 9h1"/></svg>
-                            Read O. Reg. 191/11
-                        </a>
-                        <a href="https://www.w3.org/WAI/WCAG2AA-Conformance" target="_blank" rel="noopener noreferrer">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg>
-                            WCAG 2.0 AA reference
-                        </a>
-                    </div>
-
-                    <details class="law-details">
-                        <summary>Who has to comply, and what counts as an exception?</summary>
-                        <div class="law-details-body">
-                            <p>The Level AA requirement applies to public sector organizations of any size, and to
-                                private-sector or non-profit organizations with 50+ employees in Ontario, for web content
-                                posted after January 1, 2012. Live captions (WCAG success criterion 1.2.4) and pre-recorded
-                                audio description (1.2.5) are the only criteria explicitly excluded. The requirement can be
-                                waived only where meeting it is genuinely not practicable.</p>
+                        <div class="law-links">
+                            <a href="https://www.ontario.ca/laws/regulation/110191" target="_blank" rel="noopener noreferrer">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h6M9 9h1"/></svg>
+                                Read O. Reg. 191/11
+                            </a>
+                            <a href="https://www.w3.org/WAI/WCAG2AA-Conformance" target="_blank" rel="noopener noreferrer">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg>
+                                WCAG 2.0 AA reference
+                            </a>
                         </div>
-                    </details>
 
-                    <p class="law-disclaimer">This is a plain-language summary for context, not legal advice &mdash; always
-                        confirm current obligations against the official regulation.</p>
+                        <details class="law-details">
+                            <summary>Who has to comply, and what counts as an exception?</summary>
+                            <div class="law-details-body">
+                                <p>The Level AA requirement applies to public sector organizations of any size, and to
+                                    private-sector or non-profit organizations with 50+ employees in Ontario, for web content
+                                    posted after January 1, 2012. Live captions (WCAG success criterion 1.2.4) and pre-recorded
+                                    audio description (1.2.5) are the only criteria explicitly excluded. The requirement can be
+                                    waived only where meeting it is genuinely not practicable.</p>
+                            </div>
+                        </details>
+
+                        <p class="law-disclaimer">This is a plain-language summary for context, not legal advice &mdash; always
+                            confirm current obligations against the official regulation.</p>
+                    </div>
+                </div>
+                </div>
+                </div>
                 </section>
 
-                <section class="law-card" aria-labelledby="cta-heading" sec:authorize="isAnonymous()">
+                <section class="law-card tilt-c" aria-labelledby="cta-heading" sec:authorize="isAnonymous()">
+                <div class="law-card-float">
+                <div class="law-card-surface">
+                <div class="law-card-grid">
                     <p class="eyebrow">Get started</p>
-                    <h2 id="cta-heading">Want a permanent, private history?</h2>
-                    <p>Anonymous scans are shown once and aren't saved. Create a free account to keep every
-                        report, privately, for as long as you want.</p>
-                    <div class="law-links">
-                        <a href="/login">Log in</a>
-                        <a href="/register" class="cta-primary">Sign up free</a>
+                    <div class="law-card-content">
+                        <h2 id="cta-heading">Want a permanent, private history?</h2>
+                        <p>Anonymous scans are shown once and aren't saved. Create a free account to keep every
+                            report, privately, for as long as you want.</p>
+                        <div class="law-links">
+                            <a href="/login">Log in</a>
+                            <a href="/register" class="cta-primary">Sign up free</a>
+                        </div>
                     </div>
+                </div>
+                </div>
+                </div>
                 </section>
             </div>
         </div>
