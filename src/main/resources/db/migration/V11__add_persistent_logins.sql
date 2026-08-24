@@ -1,0 +1,8 @@
+-- Schema required by Spring Security's JdbcTokenRepositoryImpl for
+-- persistent "remember me" tokens (column names/types are fixed by that class).
+CREATE TABLE IF NOT EXISTS persistent_logins (
+    username  VARCHAR(64)  NOT NULL,
+    series    VARCHAR(64)  PRIMARY KEY,
+    token     VARCHAR(64)  NOT NULL,
+    last_used TIMESTAMP    NOT NULL
+);

@@ -5,13 +5,21 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+
+import javax.sql.DataSource;
+import java.util.concurrent.TimeUnit;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    private static final int REMEMBER_ME_VALIDITY_SECONDS = (int) TimeUnit.DAYS.toSeconds(30);
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -19,7 +27,16 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public PersistentTokenRepository persistentTokenRepository(DataSource dataSource) {
+        JdbcTokenRepositoryImpl repository = new JdbcTokenRepositoryImpl();
+        repository.setDataSource(dataSource);
+        return repository;
+    }
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                                    PersistentTokenRepository persistentTokenRepository,
+                                                    UserDetailsService userDetailsService) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/account/**").authenticated()
@@ -32,6 +49,12 @@ public class SecurityConfig {
                 .usernameParameter("email")
                 .defaultSuccessUrl("/", false)
                 .permitAll()
+            )
+            .rememberMe(rememberMe -> rememberMe
+                .tokenRepository(persistentTokenRepository)
+                .userDetailsService(userDetailsService)
+                .tokenValiditySeconds(REMEMBER_ME_VALIDITY_SECONDS)
+                .key("curbcutting-remember-me")
             )
             .logout(logout -> logout
                 .logoutUrl("/logout")
