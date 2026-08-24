@@ -4,7 +4,6 @@ import com.anthropic.client.AnthropicClient;
 import com.anthropic.client.okhttp.AnthropicOkHttpClient;
 import com.anthropic.models.messages.Message;
 import com.anthropic.models.messages.MessageCreateParams;
-import com.anthropic.models.messages.OutputConfig;
 import com.anthropic.models.messages.TextBlock;
 import org.springframework.stereotype.Component;
 
@@ -25,9 +24,8 @@ public class ViolationInterpreter {
 
     public String interpret(String violationReport) {
         MessageCreateParams params = MessageCreateParams.builder()
-                .model("claude-opus-5")
+                .model("claude-haiku-4-5")
                 .maxTokens(4096L)
-                .outputConfig(OutputConfig.builder().effort(OutputConfig.Effort.LOW).build())
                 .system(SYSTEM_PROMPT)
                 .addUserMessage(violationReport)
                 .build();
