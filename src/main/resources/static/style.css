@@ -607,6 +607,12 @@ nav a:hover, nav a:focus-visible {
     font-weight: 600;
 }
 
+.settings-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 1.5rem 0;
+}
+
 /* ---------- flash ---------- */
 
 .flash {
