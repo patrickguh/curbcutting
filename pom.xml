@@ -105,6 +105,12 @@
 			<artifactId>anthropic-java</artifactId>
 			<version>2.34.0</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.commonmark</groupId>
+			<artifactId>commonmark</artifactId>
+			<version>0.24.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>

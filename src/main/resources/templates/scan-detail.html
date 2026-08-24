@@ -54,7 +54,7 @@
 
     <section aria-labelledby="interpretation-heading" th:if="${job.interpretation != null}">
         <h2 id="interpretation-heading">Summary</h2>
-        <div class="interpretation" th:text="${job.interpretation}">AI-generated summary appears here.</div>
+        <div class="interpretation" th:utext="${interpretationHtml}">AI-generated summary appears here.</div>
     </section>
     <section aria-labelledby="interpretation-heading" th:if="${job.status.name() == 'DONE' and job.interpretation == null}">
         <h2 id="interpretation-heading">Summary</h2>
