@@ -1,7 +1,50 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
+/* Dark is the default for every visitor, regardless of OS preference.
+   Light only applies if explicitly chosen in Settings, or if "System" is
+   explicitly chosen and the OS happens to prefer light. */
 :root {
-    color-scheme: light dark;
+    color-scheme: dark;
+
+    --bg-0: #0f1016;
+    --bg-1: #14151f;
+    --surface: #191b26;
+    --surface-alt: #1e2030;
+    --border: #2b2e40;
+    --border-strong: #3a3d55;
+    --text: #edeefc;
+    --muted: #9498b3;
+
+    --accent: #8b7bff;
+    --accent-2: #a78bfa;
+    --accent-soft: #262244;
+    --link: #a5b4fc;
+
+    --critical: #f87171;
+    --critical-soft: #3a1a1c;
+    --serious: #fbbf5f;
+    --serious-soft: #3a2a12;
+    --moderate: #f0d264;
+    --moderate-soft: #362f10;
+    --minor: #b7bcd6;
+    --minor-soft: #262838;
+
+    --ok: #4ade80;
+    --ok-soft: #123522;
+
+    --radius-sm: 0.5rem;
+    --radius: 0.9rem;
+    --radius-lg: 1.25rem;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow: 0 8px 24px -12px rgba(0, 0, 0, 0.55);
+    --shadow-lg: 0 20px 45px -20px rgba(0, 0, 0, 0.65);
+
+    --dur: 0.22s;
+    --ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:root[data-theme="light"] {
+    color-scheme: light;
 
     --bg-0: #f3f4fb;
     --bg-1: #eef0fa;
@@ -29,48 +72,44 @@
     --ok: #0f9d58;
     --ok-soft: #e5f6ec;
 
-    --radius-sm: 0.5rem;
-    --radius: 0.9rem;
-    --radius-lg: 1.25rem;
     --shadow-sm: 0 1px 2px rgba(28, 30, 43, 0.06);
     --shadow: 0 8px 24px -12px rgba(45, 40, 110, 0.25);
     --shadow-lg: 0 20px 45px -20px rgba(45, 40, 110, 0.35);
-
-    --dur: 0.22s;
-    --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-@media (prefers-color-scheme: dark) {
-    :root {
-        --bg-0: #0f1016;
-        --bg-1: #14151f;
-        --surface: #191b26;
-        --surface-alt: #1e2030;
-        --border: #2b2e40;
-        --border-strong: #3a3d55;
-        --text: #edeefc;
-        --muted: #9498b3;
+@media (prefers-color-scheme: light) {
+    :root[data-theme="system"] {
+        color-scheme: light;
 
-        --accent: #8b7bff;
-        --accent-2: #a78bfa;
-        --accent-soft: #262244;
-        --link: #a5b4fc;
+        --bg-0: #f3f4fb;
+        --bg-1: #eef0fa;
+        --surface: #ffffff;
+        --surface-alt: #f6f7fc;
+        --border: #e2e4f0;
+        --border-strong: #cdd1e6;
+        --text: #1c1e2b;
+        --muted: #676c82;
 
-        --critical: #f87171;
-        --critical-soft: #3a1a1c;
-        --serious: #fbbf5f;
-        --serious-soft: #3a2a12;
-        --moderate: #f0d264;
-        --moderate-soft: #362f10;
-        --minor: #b7bcd6;
-        --minor-soft: #262838;
+        --accent: #5b4bf0;
+        --accent-2: #8b5cf6;
+        --accent-soft: #ecebfe;
+        --link: #4f46e5;
 
-        --ok: #4ade80;
-        --ok-soft: #123522;
+        --critical: #dc2626;
+        --critical-soft: #fdecec;
+        --serious: #d97706;
+        --serious-soft: #fdf3e2;
+        --moderate: #a68a00;
+        --moderate-soft: #fbf6d9;
+        --minor: #4b5563;
+        --minor-soft: #eef0f4;
 
-        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-        --shadow: 0 8px 24px -12px rgba(0, 0, 0, 0.55);
-        --shadow-lg: 0 20px 45px -20px rgba(0, 0, 0, 0.65);
+        --ok: #0f9d58;
+        --ok-soft: #e5f6ec;
+
+        --shadow-sm: 0 1px 2px rgba(28, 30, 43, 0.06);
+        --shadow: 0 8px 24px -12px rgba(45, 40, 110, 0.25);
+        --shadow-lg: 0 20px 45px -20px rgba(45, 40, 110, 0.35);
     }
 }
 
@@ -84,16 +123,233 @@ html {
 
 body {
     font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+    color: var(--text);
+    background: var(--bg-0);
+}
+
+/* pages without the sidebar (auth flows) get the old centered-column look */
+.page-narrow {
     max-width: 60rem;
     margin: 0 auto;
     padding: 2rem 1.25rem 4rem;
-    line-height: 1.6;
-    color: var(--text);
+    min-height: 100vh;
     background:
         radial-gradient(60rem 30rem at 15% -10%, var(--accent-soft) 0%, transparent 60%),
         radial-gradient(50rem 30rem at 110% 10%, var(--bg-1) 0%, transparent 55%),
         var(--bg-0);
-    background-attachment: fixed;
+}
+
+/* ---------- app shell (sidebar + main) ---------- */
+
+.app-shell {
+    min-height: 100vh;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 16rem;
+    z-index: 40;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 1.25rem 1rem;
+}
+
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    text-decoration: none;
+    color: var(--text);
+    padding: 0.4rem 0.5rem 1.25rem;
+}
+
+.sidebar-brand-text {
+    font-weight: 800;
+    font-size: 1.15rem;
+    letter-spacing: -0.01em;
+    background: linear-gradient(120deg, var(--text) 30%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0.75rem;
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.92rem;
+    transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+
+.sidebar-link svg {
+    flex: none;
+    width: 1.1rem;
+    height: 1.1rem;
+    color: var(--muted);
+    transition: color var(--dur) var(--ease);
+}
+
+.sidebar-link:hover, .sidebar-link:focus-visible {
+    background: var(--surface-alt);
+}
+
+.sidebar-link:hover svg, .sidebar-link:focus-visible svg {
+    color: var(--accent);
+}
+
+.sidebar-link.active {
+    background: var(--accent-soft);
+    color: var(--accent);
+}
+
+.sidebar-link.active svg {
+    color: var(--accent);
+}
+
+.sidebar-spacer {
+    flex: 1;
+}
+
+.sidebar-bottom {
+    border-top: 1px solid var(--border);
+    padding-top: 0.85rem;
+    margin-top: 0.5rem;
+}
+
+.sidebar-account {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+}
+
+.sidebar-account-email {
+    color: var(--muted);
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.sidebar-auth-cta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 0 0.25rem;
+}
+
+.sidebar-auth-cta .sidebar-signup {
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    color: #fff;
+    justify-content: center;
+}
+
+.sidebar-auth-cta .sidebar-signup svg {
+    color: #fff;
+}
+
+.app-main {
+    margin-left: 16rem;
+    min-height: 100vh;
+    background:
+        radial-gradient(60rem 30rem at 20% -10%, var(--accent-soft) 0%, transparent 60%),
+        radial-gradient(50rem 30rem at 110% 10%, var(--bg-1) 0%, transparent 55%),
+        var(--bg-0);
+}
+
+.app-topbar {
+    display: none;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.9rem 1.1rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+}
+
+.sidebar-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+}
+
+.sidebar-toggle svg {
+    width: 1.15rem;
+    height: 1.15rem;
+}
+
+.sidebar-backdrop {
+    display: none;
+}
+
+.app-main-inner {
+    max-width: 62rem;
+    margin: 0 auto;
+    padding: 0 1.5rem 4rem;
+}
+
+@media (max-width: 56rem) {
+    .app-topbar, .sidebar-toggle {
+        display: flex;
+    }
+
+    .app-main {
+        margin-left: 0;
+    }
+
+    .sidebar {
+        width: 17rem;
+        transform: translateX(-100%);
+        transition: transform var(--dur) var(--ease);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .app-shell.sidebar-open .sidebar {
+        transform: translateX(0);
+    }
+
+    .sidebar-backdrop {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(10, 10, 20, 0.45);
+        z-index: 35;
+    }
+
+    .app-shell.sidebar-open .sidebar-backdrop {
+        display: block;
+    }
 }
 
 /* ---------- entrance animations ---------- */
@@ -186,44 +442,6 @@ nav a:hover, nav a:focus-visible {
     color: var(--accent-2);
 }
 
-.account-nav {
-    margin-left: auto;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    font-size: 0.9rem;
-}
-
-.account-nav a {
-    color: var(--link);
-    text-decoration: none;
-    font-weight: 600;
-    transition: color var(--dur) var(--ease);
-}
-
-.account-nav a:hover, .account-nav a:focus-visible {
-    color: var(--accent-2);
-}
-
-.account-nav .signup-link {
-    padding: 0.4rem 0.85rem;
-    border-radius: 999px;
-    background: linear-gradient(135deg, var(--accent), var(--accent-2));
-    color: #fff;
-    transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
-}
-
-.account-nav .signup-link:hover, .account-nav .signup-link:focus-visible {
-    color: #fff;
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-sm);
-}
-
-.account-email {
-    color: var(--muted);
-    font-weight: 600;
-}
-
 .logout-form {
     margin: 0;
     display: inline;
@@ -243,6 +461,48 @@ nav a:hover, nav a:focus-visible {
 
 .link-button:hover, .link-button:focus-visible {
     color: var(--accent-2);
+}
+
+/* ---------- theme switch ---------- */
+
+.theme-switch {
+    display: inline-flex;
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.25rem;
+    gap: 0.25rem;
+}
+
+.theme-option {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    font: inherit;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--muted);
+    transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+
+.theme-option svg {
+    width: 1rem;
+    height: 1rem;
+}
+
+.theme-option:hover, .theme-option:focus-visible {
+    color: var(--text);
+}
+
+.theme-option[aria-pressed="true"] {
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: var(--shadow-sm);
 }
 
 /* ---------- auth pages ---------- */
@@ -750,6 +1010,139 @@ code {
 
 a {
     transition: color var(--dur) var(--ease);
+}
+
+/* ---------- centered prompt hero ---------- */
+
+.prompt-hero {
+    min-height: 78vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 3rem 1rem 2rem;
+    animation: fadeInUp 0.6s var(--ease) both;
+}
+
+.prompt-hero .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin: 0 0 0.75rem;
+}
+
+.prompt-heading {
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0 0 0.75rem;
+    background: linear-gradient(120deg, var(--text) 25%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.prompt-sub {
+    color: var(--muted);
+    font-size: 1.05rem;
+    max-width: 34rem;
+    margin: 0 0 2rem;
+}
+
+.prompt-form {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    max-width: 38rem;
+    margin: 0 auto;
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    padding: 0.4rem 0.4rem 0.4rem 1.4rem;
+    box-shadow: var(--shadow);
+    transition: box-shadow var(--dur) var(--ease), border-color var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+
+.prompt-form:focus-within {
+    border-color: var(--accent);
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+}
+
+.prompt-form input[type="url"] {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    background: none;
+    font: inherit;
+    font-size: 1.05rem;
+    padding: 0.7rem 0;
+    color: var(--text);
+    outline: none;
+}
+
+.prompt-form input[type="url"]::placeholder {
+    color: var(--muted);
+}
+
+.prompt-form button {
+    flex: none;
+    width: 2.9rem;
+    height: 2.9rem;
+    border-radius: 50%;
+    border: none;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    color: #fff;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--dur) var(--ease), filter var(--dur) var(--ease);
+}
+
+.prompt-form button svg {
+    width: 1.2rem;
+    height: 1.2rem;
+}
+
+.prompt-form button:hover, .prompt-form button:focus-visible {
+    transform: scale(1.06);
+    filter: brightness(1.06);
+}
+
+.prompt-hero .badge-row {
+    margin-top: 1.75rem;
+    justify-content: center;
+}
+
+.scroll-hint {
+    margin-top: 2.5rem;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    color: var(--muted);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-decoration: none;
+    animation: fadeIn 0.8s var(--ease) both;
+    animation-delay: 0.4s;
+}
+
+.scroll-hint svg {
+    width: 1.3rem;
+    height: 1.3rem;
+    animation: scrollBounce 1.8s ease-in-out infinite;
+}
+
+@keyframes scrollBounce {
+    0%, 100% { transform: translateY(0); opacity: 0.6; }
+    50%      { transform: translateY(6px); opacity: 1; }
 }
 
 /* ---------- hero ---------- */

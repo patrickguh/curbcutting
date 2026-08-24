@@ -5,33 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title th:text="'Curbcutting &mdash; Report for ' + ${job.rootUrl}">Curbcutting &mdash; Report</title>
     <link rel="stylesheet" href="/style.css">
+    <script>(function(){try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark'||t==='system'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%235b4bf0'/%3E%3Cpath d='M4 17h4l3-8h6l3 8' stroke='white' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 </head>
 <body>
-<header>
-    <div class="logo-mark" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M4 17h4l3-8h6l3 8" />
-            <circle cx="6" cy="19" r="1.5" fill="currentColor" stroke="none" />
-            <circle cx="18" cy="19" r="1.5" fill="currentColor" stroke="none" />
-        </svg>
-    </div>
-    <div>
-        <h1>Curbcutting</h1>
-        <nav><a href="/">&larr; Back to home</a></nav>
-    </div>
-    <nav class="account-nav" aria-label="Account">
-        <a href="/account/scans" sec:authorize="isAuthenticated()">My Scans</a>
-        <span class="account-email" sec:authorize="isAuthenticated()" sec:authentication="name"></span>
-        <form method="post" th:action="@{/logout}" sec:authorize="isAuthenticated()" class="logout-form">
-            <button type="submit" class="link-button">Log out</button>
-        </form>
-        <a href="/login" sec:authorize="isAnonymous()">Log in</a>
-        <a href="/register" sec:authorize="isAnonymous()" class="signup-link">Sign up</a>
-    </nav>
-</header>
+<div class="app-shell">
+    <div th:replace="~{fragments/shell :: sidebar(active=${job.owner != null ? 'history' : 'home'})}"></div>
+    <div class="sidebar-backdrop"></div>
 
-<main>
+    <div class="app-main">
+        <div th:replace="~{fragments/shell :: topbar}"></div>
+
+        <div class="app-main-inner" style="padding-top:2rem;">
     <section aria-labelledby="report-heading">
         <h2 id="report-heading">
             Report for <span th:text="${job.rootUrl}">https://example.com</span>
@@ -131,7 +116,10 @@
             </div>
         </article>
     </section>
-</main>
+        </div>
+    </div>
+</div>
+<script defer src="/shell.js"></script>
 <script defer src="/detail.js"></script>
 </body>
 </html>

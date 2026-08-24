@@ -87,6 +87,16 @@ public class AccountController {
         return "redirect:/login";
     }
 
+    @GetMapping("/settings")
+    public String settings(Authentication authentication, Model model) {
+        boolean signedIn = authentication != null && authentication.isAuthenticated()
+                && !(authentication instanceof org.springframework.security.authentication.AnonymousAuthenticationToken);
+        if (signedIn) {
+            model.addAttribute("userEmail", authentication.getName());
+        }
+        return "settings";
+    }
+
     @GetMapping("/account/scans")
     public String myScans(Authentication authentication, Model model) {
         User user = userRepository.findByEmail(authentication.getName()).orElseThrow();

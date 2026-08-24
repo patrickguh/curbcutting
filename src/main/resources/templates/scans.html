@@ -5,165 +5,138 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Curbcutting &mdash; Accessibility Scans</title>
     <link rel="stylesheet" href="/style.css">
+    <script>(function(){try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark'||t==='system'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%235b4bf0'/%3E%3Cpath d='M4 17h4l3-8h6l3 8' stroke='white' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 </head>
 <body>
-<header>
-    <div class="logo-mark" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M4 17h4l3-8h6l3 8" />
-            <circle cx="6" cy="19" r="1.5" fill="currentColor" stroke="none" />
-            <circle cx="18" cy="19" r="1.5" fill="currentColor" stroke="none" />
-        </svg>
+<div class="app-shell">
+    <div th:replace="~{fragments/shell :: sidebar(active='home')}"></div>
+    <div class="sidebar-backdrop"></div>
+
+    <div class="app-main">
+        <div th:replace="~{fragments/shell :: topbar}"></div>
+
+        <div class="app-main-inner">
+            <section class="prompt-hero" aria-labelledby="prompt-heading">
+                <p class="eyebrow">Curbcutting</p>
+                <h1 id="prompt-heading" class="prompt-heading">What website should we check?</h1>
+                <p class="prompt-sub">Free, automated AODA / WCAG 2.0 AA accessibility scans, right in your browser.</p>
+
+                <form class="prompt-form" method="post" th:action="@{/account/scans}" aria-label="Scan a website" sec:authorize="isAuthenticated()">
+                    <input type="url" name="url" placeholder="https://example.com" required autofocus>
+                    <button type="submit" aria-label="Scan">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                    </button>
+                </form>
+                <form class="prompt-form" method="post" th:action="@{/guest-scan}" aria-label="Scan a website" sec:authorize="isAnonymous()">
+                    <input type="url" name="url" placeholder="https://example.com" required autofocus>
+                    <button type="submit" aria-label="Scan">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                    </button>
+                </form>
+
+                <div class="badge-row" aria-hidden="true">
+                    <span class="chip">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 8-7 9-4-1-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg>
+                        WCAG 2.0 AA
+                    </span>
+                    <span class="chip">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M5 7l-3 6a3 3 0 0 0 6 0zM19 7l-3 6a3 3 0 0 0 6 0zM5 7h14M8 21h8"/></svg>
+                        AODA-based checks
+                    </span>
+                    <span class="chip">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                        Real browser scans
+                    </span>
+                </div>
+
+                <a href="#below-fold" class="scroll-hint">
+                    See how it works
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                </a>
+            </section>
+
+            <div id="below-fold">
+                <section aria-labelledby="scan-history-heading" sec:authorize="isAuthenticated()" style="margin-bottom:2rem;">
+                    <h2 id="scan-history-heading">Your scan history</h2>
+                    <div th:replace="~{fragments/scan-history :: table(${jobs})}"></div>
+                </section>
+
+                <section class="law-card" aria-labelledby="example-heading" th:if="${exampleJob}">
+                    <p class="eyebrow">See it in action</p>
+                    <h2 id="example-heading">Example report: Deque University's Mars demo</h2>
+                    <p>That's a real, deliberately-broken accessibility test site &mdash; built specifically to be scanned.
+                        Here's exactly what a Curbcutting report looks like against it: violations by page, categorized by
+                        type, with an AI-generated summary.</p>
+                    <div class="law-links">
+                        <a th:href="@{'/scans/' + ${exampleJob.id} + '/report'}">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg>
+                            View the example report
+                        </a>
+                    </div>
+                </section>
+
+                <section class="law-card" aria-labelledby="law-heading">
+                    <p class="eyebrow">The regulation</p>
+                    <h2 id="law-heading">Ontario Regulation 191/11 &mdash; Integrated Accessibility Standards</h2>
+                    <p>Under the <em>Accessibility for Ontarians with Disabilities Act, 2005</em>, Section 14 of O. Reg. 191/11
+                        sets the legal bar for websites:</p>
+                    <blockquote class="law-quote">
+                        &ldquo;Designated public sector organizations and large organizations shall make their internet
+                        websites and web content conform with the World Wide Web Consortium Web Content Accessibility
+                        Guidelines (WCAG) 2.0, initially at Level A and increasing to Level AA.&rdquo;
+                        <br><small>&mdash; O. Reg. 191/11, s. 14</small>
+                    </blockquote>
+
+                    <div class="timeline">
+                        <div class="timeline-track"><div class="timeline-fill"></div></div>
+                        <div class="timeline-labels">
+                            <span><strong>Jan 1, 2014</strong>New sites: Level A</span>
+                            <span><strong>Jan 1, 2021</strong>All sites: Level AA (current standard)</span>
+                        </div>
+                    </div>
+
+                    <div class="law-links">
+                        <a href="https://www.ontario.ca/laws/regulation/110191" target="_blank" rel="noopener noreferrer">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h6M9 9h1"/></svg>
+                            Read O. Reg. 191/11
+                        </a>
+                        <a href="https://www.w3.org/WAI/WCAG2AA-Conformance" target="_blank" rel="noopener noreferrer">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg>
+                            WCAG 2.0 AA reference
+                        </a>
+                    </div>
+
+                    <details class="law-details">
+                        <summary>Who has to comply, and what counts as an exception?</summary>
+                        <div class="law-details-body">
+                            <p>The Level AA requirement applies to public sector organizations of any size, and to
+                                private-sector or non-profit organizations with 50+ employees in Ontario, for web content
+                                posted after January 1, 2012. Live captions (WCAG success criterion 1.2.4) and pre-recorded
+                                audio description (1.2.5) are the only criteria explicitly excluded. The requirement can be
+                                waived only where meeting it is genuinely not practicable.</p>
+                        </div>
+                    </details>
+
+                    <p class="law-disclaimer">This is a plain-language summary for context, not legal advice &mdash; always
+                        confirm current obligations against the official regulation.</p>
+                </section>
+
+                <section class="law-card" aria-labelledby="cta-heading" sec:authorize="isAnonymous()">
+                    <p class="eyebrow">Get started</p>
+                    <h2 id="cta-heading">Want a permanent, private history?</h2>
+                    <p>Anonymous scans are shown once and aren't saved. Create a free account to keep every
+                        report, privately, for as long as you want.</p>
+                    <div class="law-links">
+                        <a href="/login">Log in</a>
+                        <a href="/register" class="cta-primary">Sign up free</a>
+                    </div>
+                </section>
+            </div>
+        </div>
     </div>
-    <div>
-        <h1>Curbcutting</h1>
-        <p class="tagline">Automated AODA/WCAG accessibility scanning</p>
-    </div>
-    <nav class="account-nav" aria-label="Account">
-        <a href="/account/scans" sec:authorize="isAuthenticated()">My Scans</a>
-        <span class="account-email" sec:authorize="isAuthenticated()" sec:authentication="name"></span>
-        <form method="post" th:action="@{/logout}" sec:authorize="isAuthenticated()" class="logout-form">
-            <button type="submit" class="link-button">Log out</button>
-        </form>
-        <a href="/login" sec:authorize="isAnonymous()">Log in</a>
-        <a href="/register" sec:authorize="isAnonymous()" class="signup-link">Sign up</a>
-    </nav>
-</header>
-
-<main>
-    <section class="hero" aria-labelledby="purpose-heading">
-        <div>
-            <h2 id="purpose-heading">Know if your website breaks the law</h2>
-            <p>Curbcutting scans any website in a real browser and checks it against Ontario's accessibility
-                regulation &mdash; flagging exactly where it falls short, page by page, so you can fix real
-                barriers before they become legal or human ones.</p>
-            <div class="badge-row" aria-hidden="true">
-                <span class="chip">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 8-7 9-4-1-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg>
-                    WCAG 2.0 AA
-                </span>
-                <span class="chip">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M5 7l-3 6a3 3 0 0 0 6 0zM19 7l-3 6a3 3 0 0 0 6 0zM5 7h14M8 21h8"/></svg>
-                    AODA-based checks
-                </span>
-                <span class="chip">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
-                    Real browser scans
-                </span>
-            </div>
-        </div>
-        <div class="hero-art">
-            <svg viewBox="0 0 320 200" role="img" aria-hidden="true" focusable="false">
-                <title>Illustration of a wheelchair user crossing a curb cut ramp</title>
-                <rect x="0" y="70" width="320" height="45" fill="var(--surface-alt)" stroke="var(--border)" stroke-width="1"/>
-                <rect x="0" y="150" width="320" height="45" fill="var(--bg-1)" stroke="var(--border)" stroke-width="1"/>
-                <polygon points="118,150 202,150 184,115 136,115" fill="var(--surface-alt)" stroke="var(--border)" stroke-width="1"/>
-                <rect x="0" y="112" width="136" height="4" fill="var(--border-strong)"/>
-                <rect x="184" y="112" width="136" height="4" fill="var(--border-strong)"/>
-                <g fill="var(--muted)" opacity="0.6">
-                    <circle cx="145" cy="140" r="1.6"/><circle cx="153" cy="140" r="1.6"/><circle cx="161" cy="140" r="1.6"/><circle cx="169" cy="140" r="1.6"/><circle cx="177" cy="140" r="1.6"/>
-                    <circle cx="145" cy="130" r="1.6"/><circle cx="153" cy="130" r="1.6"/><circle cx="161" cy="130" r="1.6"/><circle cx="169" cy="130" r="1.6"/><circle cx="177" cy="130" r="1.6"/>
-                </g>
-                <g class="wheelchair-figure">
-                    <rect x="-14" y="-34" width="6" height="26" rx="2" fill="var(--accent-2)"/>
-                    <circle cx="-8" cy="-42" r="7" fill="var(--text)"/>
-                    <rect x="-13" y="-34" width="15" height="18" rx="4" fill="var(--accent)"/>
-                    <rect x="-16" y="-17" width="20" height="6" rx="2" fill="var(--accent-2)"/>
-                    <circle class="wheel" cx="2" cy="-6" r="13" fill="none" stroke="var(--text)" stroke-width="3"/>
-                    <circle cx="2" cy="-6" r="2" fill="var(--text)"/>
-                    <circle cx="-13" cy="-3" r="4.5" fill="none" stroke="var(--text)" stroke-width="2.5"/>
-                </g>
-            </svg>
-        </div>
-    </section>
-
-    <section class="law-card" aria-labelledby="law-heading">
-        <p class="eyebrow">The regulation</p>
-        <h2 id="law-heading">Ontario Regulation 191/11 &mdash; Integrated Accessibility Standards</h2>
-        <p>Under the <em>Accessibility for Ontarians with Disabilities Act, 2005</em>, Section 14 of O. Reg. 191/11
-            sets the legal bar for websites:</p>
-        <blockquote class="law-quote">
-            &ldquo;Designated public sector organizations and large organizations shall make their internet
-            websites and web content conform with the World Wide Web Consortium Web Content Accessibility
-            Guidelines (WCAG) 2.0, initially at Level A and increasing to Level AA.&rdquo;
-            <br><small>&mdash; O. Reg. 191/11, s. 14</small>
-        </blockquote>
-
-        <div class="timeline">
-            <div class="timeline-track"><div class="timeline-fill"></div></div>
-            <div class="timeline-labels">
-                <span><strong>Jan 1, 2014</strong>New sites: Level A</span>
-                <span><strong>Jan 1, 2021</strong>All sites: Level AA (current standard)</span>
-            </div>
-        </div>
-
-        <div class="law-links">
-            <a href="https://www.ontario.ca/laws/regulation/110191" target="_blank" rel="noopener noreferrer">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h6M9 9h1"/></svg>
-                Read O. Reg. 191/11
-            </a>
-            <a href="https://www.w3.org/WAI/WCAG2AA-Conformance" target="_blank" rel="noopener noreferrer">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg>
-                WCAG 2.0 AA reference
-            </a>
-        </div>
-
-        <details class="law-details">
-            <summary>Who has to comply, and what counts as an exception?</summary>
-            <div class="law-details-body">
-                <p>The Level AA requirement applies to public sector organizations of any size, and to
-                    private-sector or non-profit organizations with 50+ employees in Ontario, for web content
-                    posted after January 1, 2012. Live captions (WCAG success criterion 1.2.4) and pre-recorded
-                    audio description (1.2.5) are the only criteria explicitly excluded. The requirement can be
-                    waived only where meeting it is genuinely not practicable.</p>
-            </div>
-        </details>
-
-        <p class="law-disclaimer">This is a plain-language summary for context, not legal advice &mdash; always
-            confirm current obligations against the official regulation.</p>
-    </section>
-
-    <section class="law-card" aria-labelledby="example-heading" th:if="${exampleJob}">
-        <p class="eyebrow">See it in action</p>
-        <h2 id="example-heading">Example report: Deque University's Mars demo</h2>
-        <p>That's a real, deliberately-broken accessibility test site &mdash; built specifically to be scanned.
-            Here's exactly what a Curbcutting report looks like against it: violations by page, categorized by
-            type, with an AI-generated summary.</p>
-        <div class="law-links">
-            <a th:href="@{'/scans/' + ${exampleJob.id} + '/report'}">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg>
-                View the example report
-            </a>
-        </div>
-    </section>
-
-    <section class="law-card" aria-labelledby="cta-heading">
-        <p class="eyebrow">Get started</p>
-        <h2 id="cta-heading">
-            <span sec:authorize="isAuthenticated()">Scan your own website</span>
-            <span sec:authorize="isAnonymous()">Try a quick scan &mdash; no account needed</span>
-        </h2>
-        <p sec:authorize="isAuthenticated()">Your scans and their reports are private to your account.</p>
-        <p sec:authorize="isAnonymous()">Scan any website right now, no sign-up required. The report is shown
-            once and isn't saved &mdash; create a free account if you'd rather keep a private, permanent history.</p>
-
-        <form class="new-scan" method="post" th:action="@{/guest-scan}" aria-label="Quick scan without an account" sec:authorize="isAnonymous()">
-            <div>
-                <label for="guest-url">Website URL to scan</label>
-                <input type="url" id="guest-url" name="url" placeholder="https://example.com" required>
-            </div>
-            <button type="submit">Scan</button>
-        </form>
-
-        <div class="law-links" sec:authorize="isAuthenticated()">
-            <a href="/account/scans">Go to My Scans</a>
-        </div>
-        <div class="law-links" sec:authorize="isAnonymous()">
-            <a href="/login">Log in</a>
-            <a href="/register" class="cta-primary">Sign up for a saved history</a>
-        </div>
-    </section>
-</main>
+</div>
+<script defer src="/shell.js"></script>
+<script defer src="/app.js"></script>
 </body>
 </html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="table(jobs)">
+    <p class="empty-state" th:if="${#lists.isEmpty(jobs)}">
+        No scans yet &mdash; submit a URL above to get started.
+    </p>
+
+    <div class="table-wrap" th:unless="${#lists.isEmpty(jobs)}">
+    <table>
+        <caption>Your submitted scans, most recent first</caption>
+        <thead>
+        <tr>
+            <th scope="col">Site</th>
+            <th scope="col">Status</th>
+            <th scope="col">Submitted</th>
+            <th scope="col">Report</th>
+        </tr>
+        </thead>
+        <tbody aria-live="polite">
+        <tr th:each="job : ${jobs}" th:attr="data-job-id=${job.id}">
+            <td th:text="${job.rootUrl}">https://example.com</td>
+            <td>
+                <span class="status" th:classappend="'status-' + ${job.status}" th:text="${job.status}">QUEUED</span>
+            </td>
+            <td th:text="${#temporals.format(job.createdAt, 'yyyy-MM-dd HH:mm')}">2026-01-01 00:00</td>
+            <td class="report-cell">
+                <a th:if="${job.status.name() == 'DONE' or job.status.name() == 'FAILED'}"
+                   th:href="@{'/scans/' + ${job.id} + '/report'}">View report</a>
+                <span th:unless="${job.status.name() == 'DONE' or job.status.name() == 'FAILED'}" class="empty-state">pending&hellip;</span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    </div>
+</div>
+
+</body>
+</html>

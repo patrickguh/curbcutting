@@ -50,8 +50,15 @@ public class ScanViewController {
     public record CategorySummary(String slug, String label, long count) { }
 
     @GetMapping("/")
-    public String home(Model model) {
+    public String home(Authentication authentication, Model model) {
         scanJobRepository.findFirstByIsExampleTrue().ifPresent(job -> model.addAttribute("exampleJob", job));
+
+        User user = currentUser(authentication);
+        if (user != null) {
+            List<ScanJob> jobs = scanJobRepository.findByOwnerId(user.getId());
+            jobs.sort(Comparator.comparing(ScanJob::getCreatedAt).reversed());
+            model.addAttribute("jobs", jobs);
+        }
         return "scans";
     }
 
